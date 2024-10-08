@@ -1,4 +1,2 @@
 3 Fizz
 5 Buzz
-7 Butt
-11 Fuzz
