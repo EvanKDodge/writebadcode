@@ -1,0 +1,6 @@
+This is "over-engineered" FizzBuzz. It reads the data from a file (fb.txt) and it allocates memory dynamically. It is far from perfect, but it should cover situations where you need more than just Fizz and Buzz. Here is an example input file:
+
+3 Fizz
+5 Buzz
+7 Fuzz
+11 Butt
