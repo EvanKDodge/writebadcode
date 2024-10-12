@@ -1,9 +1,10 @@
 * Snake with ncurses
 ** At a minimum
-*** a game loop
-*** ESC or q will exit the game
-*** snake will update every frame
-*** snake gets longer when food is eaten
-*** snake dies
+*** a game loop - DONE
+**** ESC or q will exit the game - DONE
+**** snake will update every frame
+***** this is whether or not the player hits a key
+**** snake gets longer when food is eaten
+*** snake dies when...
 **** hitting a wall
 **** hits self
