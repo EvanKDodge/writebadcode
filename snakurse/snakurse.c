@@ -6,6 +6,7 @@ typedef struct Player {
 	int c;
 	int rvel;
 	int cvel;
+	int alive;
 } Player;
 
 int screen_init();
@@ -24,24 +25,44 @@ int main(void)
 	while((c = getch()) != 'q')
 	{
 		erase();
-		mvaddch(user.r, user.c, '@');
-		switch(c)
+		if(user.alive)
 		{
-			case 'w':
-				player_dir_change(&user, -1, 0);
-				break;
-			case 's':
-				player_dir_change(&user, 1, 0);
-				break;
-			case 'a':
-				player_dir_change(&user, 0, -1);
-				break;
-			case 'd':
-				player_dir_change(&user, 0, 1);
-				break;
-		};
-		player_update(&user);
-		usleep(150000);
+			mvaddch(user.r, user.c, '@');
+			if(user.r < 0 || user.r > (LINES - 1) || user.c < 0 || user.c > (COLS - 1))
+			{
+				user.alive = 0;
+			}
+			switch(c)
+			{
+				case 'w':
+					if(user.rvel != 1)
+						player_dir_change(&user, -1, 0);
+					break;
+				case 's':
+					if(user.rvel != -1)
+						player_dir_change(&user, 1, 0);
+					break;
+				case 'a':
+					if(user.cvel != 1)
+						player_dir_change(&user, 0, -1);
+					break;
+				case 'd':
+					if(user.cvel != -1)
+						player_dir_change(&user, 0, 1);
+					break;
+			};
+			player_update(&user);
+			usleep(100000);
+		}
+		else
+		{
+			mvaddstr(LINES / 2, COLS / 2 - 4, "Game Over");
+			mvaddstr(LINES / 2 + 2, COLS / 2 - 9, "Press 'r' to reset");
+			if(c == 'r')
+			{
+				user = player_init();
+			}
+		}
 		refresh();
 	}
 
@@ -80,7 +101,8 @@ Player player_init()
 	p.r = LINES / 2;
 	p.c = LINES / 2;
 	p.rvel = 0;
-	p.cvel = 0;
+	p.cvel = 1;
+	p.alive = 1;
 
 	return p;
 }
