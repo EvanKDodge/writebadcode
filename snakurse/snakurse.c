@@ -18,6 +18,7 @@ typedef struct Player {
 	int alive;
 	int tail;
 	Piece food;
+	int score;
 } Player;
 
 int screen_init();
@@ -26,14 +27,13 @@ void player_dir_change(Player*, int, int);
 void player_update(Player*);
 void draw(Player*);
 void player_input(Player*, char);
-int generate_coord(int);
+int generate_coord(int, int);
 
 int main(void)
 {
 	char c;
 	Player user;
 	Piece food;
-
 
 	screen_init();
 	user = player_init();
@@ -94,13 +94,15 @@ void player_update(Player *p)
 				p->body[p->tail+1].face = '#';
 				p->tail++;
 
-			    p->food.r = generate_coord(LINES - 1);
-				p->food.c = generate_coord(COLS - 1);
+			    p->food.r = generate_coord(LINES - 2, 2);
+				p->food.c = generate_coord(COLS - 2, 1);
+
+				p->score++;
 			}
 
 			// if the snake hits a wall, it dies
-			if(p->body[i].r < 0 || p->body[i].r > (LINES - 1) || 
-				p->body[i].c < 0 || p->body[i].c > (COLS - 1))
+			if(p->body[i].r < 2 || p->body[i].r > (LINES - 2) || 
+				p->body[i].c < 1 || p->body[i].c > (COLS - 2))
 			{
 				p->alive = 0;
 			}
@@ -125,10 +127,24 @@ void player_update(Player *p)
 
 void draw(Player *p)
 {
-	int i;
+	int i, j;
 
 	if(p->alive)
 	{
+		//draw the playfield
+		for(i = 0;i <= LINES - 1;i++)
+		{
+			for(j = 0;j <= COLS - 1;j++)
+			{
+				if(i == 1 || i == LINES - 1)
+					mvaddch(i, j, '-');
+				else if(j == 0 || j == COLS - 1)
+					mvaddch(i, j, '|');
+			}
+		}
+		mvaddstr(0, 2, "Score:");
+		mvprintw(0, 9, "%d", p->score);
+
 		//draw the snake
 		for(i = 0;p->body[i].r > 0 && p->body[i].c > 0;i++)
 		{
@@ -190,28 +206,24 @@ Player player_init()
 	p.cvel = 1;
 	p.alive = 1;
 	
-	p.food.r = generate_coord(LINES);
-	p.food.c = generate_coord(COLS);
+	p.food.r = generate_coord(LINES - 2, 2);
+	p.food.c = generate_coord(COLS - 2, 1);
 	p.food.face = '$';
 
+	p.score = 0;
+
 	p.tail = 0;
-	for(i = 1;i < MAX_SEGMENTS;i++)
-	{
-		// marking segments that are not in use
-		p.body[i].r = -1;
-		p.body[i].c = -1;
-	}
 
 	return p;
 }
 
-int generate_coord(int range)
+int generate_coord(int high, int low)
 {
     int num;
 
     srand(time(NULL));
 
-    num = rand() % (range + 1) + 1;
+    num = rand() % (high - low + 1) + low;
 
     return num;
 }
