@@ -1,16 +1,22 @@
 #include <curses.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <time.h>
 
-typedef struct Segment {
+#define MAX_SEGMENTS 1600
+
+typedef struct Piece {
 	int r;
 	int c;
-} Segment;
+	char face;
+} Piece;
 
 typedef struct Player {
-	Segment body[1];
+	Piece body[MAX_SEGMENTS];
 	int rvel;
 	int cvel;
 	int alive;
+	Piece food;
 } Player;
 
 int screen_init();
@@ -19,11 +25,14 @@ void player_dir_change(Player*, int, int);
 void player_update(Player*);
 void draw(Player*);
 void player_input(Player*, char);
+int generate_coord(int);
 
 int main(void)
 {
 	char c;
 	Player user;
+	Piece food;
+
 
 	screen_init();
 	user = player_init();
@@ -66,21 +75,32 @@ void player_dir_change(Player *p, int rvel, int cvel)
 }
 
 void player_update(Player *p)
-{
-	if(p->body[0].r < 0 || p->body[0].r > (LINES - 1) || p->body[0].c < 0 || p->body[0].c > (COLS - 1))
+{	
+	p->body[0].r += p->rvel;
+	p->body[0].c += p->cvel;
+
+	// if the snake hits a wall, it dies
+	if(p->body[0].r < 0 || p->body[0].r > (LINES - 1) || 
+		p->body[0].c < 0 || p->body[0].c > (COLS - 1))
 	{
 		p->alive = 0;
 	}
-
-	p->body[0].r += p->rvel;
-	p->body[0].c += p->cvel;
 }
 
 void draw(Player *p)
 {
+	int i;
+
 	if(p->alive)
 	{
-		mvaddch(p->body[0].r, p->body[0].c, '@');
+		//draw the snake
+		for(i = 0;p->body[i].r > 0 && p->body[i].c > 0;i++)
+		{
+			mvaddch(p->body[i].r, p->body[i].c, p->body[i].face);
+		}
+
+		//draw the food
+		mvaddch(p->food.r, p->food.c, p->food.face);
 	}
 	else
 	{
@@ -125,12 +145,36 @@ void player_input(Player *p, char c)
 Player player_init()
 {
 	Player p;
+	int i;
 
 	p.body[0].r = LINES / 2;
 	p.body[0].c = COLS / 2;
+	p.body[0].face = '@';
 	p.rvel = 0;
 	p.cvel = 1;
 	p.alive = 1;
+	
+	p.food.r = generate_coord(LINES);
+	p.food.c = generate_coord(COLS);
+	p.food.face = '$';
+
+	for(i = 1;i < MAX_SEGMENTS;i++)
+	{
+		// marking segments that are not in use
+		p.body[i].r = -1;
+		p.body[i].c = -1;
+	}
 
 	return p;
+}
+
+int generate_coord(int range)
+{
+    int num;
+
+    srand(time(NULL));
+
+    num = rand() % (range + 1) + 1;
+
+    return num;
 }
