@@ -16,6 +16,7 @@ typedef struct Player {
 	int rvel;
 	int cvel;
 	int alive;
+	int tail;
 	Piece food;
 } Player;
 
@@ -76,14 +77,49 @@ void player_dir_change(Player *p, int rvel, int cvel)
 
 void player_update(Player *p)
 {	
-	p->body[0].r += p->rvel;
-	p->body[0].c += p->cvel;
+	int i;
 
-	// if the snake hits a wall, it dies
-	if(p->body[0].r < 0 || p->body[0].r > (LINES - 1) || 
-		p->body[0].c < 0 || p->body[0].c > (COLS - 1))
+	for(i = p->tail;i >= 0;i--)
 	{
-		p->alive = 0;
+		if(i == 0)
+		{
+			p->body[i].r += p->rvel;
+			p->body[i].c += p->cvel;
+
+			// if the snake eats food
+			if(p->body[i].r == p->food.r && p->body[i].c == p->food.c)
+			{
+				p->body[p->tail+1].r = p->body[p->tail].r;
+				p->body[p->tail+1].c = p->body[p->tail].c;
+				p->body[p->tail+1].face = '#';
+				p->tail++;
+
+			    p->food.r = generate_coord(LINES - 1);
+				p->food.c = generate_coord(COLS - 1);
+			}
+
+			// if the snake hits a wall, it dies
+			if(p->body[i].r < 0 || p->body[i].r > (LINES - 1) || 
+				p->body[i].c < 0 || p->body[i].c > (COLS - 1))
+			{
+				p->alive = 0;
+			}
+		}
+		else
+		{
+			p->body[i].r = p->body[i-1].r;
+			p->body[i].c = p->body[i-1].c;
+		}
+	}
+
+	for(i = 1;i <= p->tail;i++)
+	{
+		if(p->body[i].r == p->body[0].r
+			&& p->body[i].c == p->body[0].c
+			&& i != 0)
+		{
+			//p->alive = 0;
+		}
 	}
 }
 
@@ -158,6 +194,7 @@ Player player_init()
 	p.food.c = generate_coord(COLS);
 	p.food.face = '$';
 
+	p.tail = 0;
 	for(i = 1;i < MAX_SEGMENTS;i++)
 	{
 		// marking segments that are not in use

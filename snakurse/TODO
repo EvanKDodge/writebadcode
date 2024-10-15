@@ -5,3 +5,6 @@ Snake needs to eat food to get larger
 The snake array will need to be drawn every frame
 	Is the head at index 0, or at the current end
 
+What marks the last snake segment?
+	Could dive into the array every time, or...
+	Could just mark the last at the beginning and increment each time it eats
