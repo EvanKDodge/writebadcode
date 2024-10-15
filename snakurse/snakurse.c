@@ -116,9 +116,9 @@ void player_update(Player *p)
 	{
 		if(p->body[i].r == p->body[0].r
 			&& p->body[i].c == p->body[0].c
-			&& i != 0)
+			&& i > 1)
 		{
-			//p->alive = 0;
+			p->alive = 0;
 		}
 	}
 }
