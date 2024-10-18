@@ -13,7 +13,6 @@ typedef struct Player {
     int alive;
     int tail;
     Piece food;
-    int score;
 } Player;
 
 int screen_init();
