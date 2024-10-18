@@ -4,6 +4,8 @@
 #include <time.h>
 #include "snakurse.h"
 
+#define DELAY 130000
+
 int main(void)
 {
 	char c;
@@ -21,7 +23,7 @@ int main(void)
 		if(user.alive)
 		{
 			player_update(&user);
-			usleep(125000);
+			usleep(DELAY);
 		}
 
 		draw(&user); //draw what needs drawing
