@@ -27,9 +27,7 @@ void player_update(Player *p)
                 p->tail++;
 
                 p->food.r = generate_coord(LINES - 2, 2);
-                p->food.c = generate_coord(COLS - 2, 1);
-
-                p->score++;
+                p->food.c = generate_coord((COLS - 2) / 2, 1) * 2;
             }
 
             // if the snake hits a wall, it dies
@@ -73,12 +71,12 @@ void player_input(Player *p, char c)
                     player_dir_change(p, 1, 0);
                 break;
             case 'a':
-                if(p->cvel != 1)
-                    player_dir_change(p, 0, -1);
+                if(p->cvel != 2)
+                    player_dir_change(p, 0, -2);
                 break;
             case 'd':
-                if(p->cvel != -1)
-                    player_dir_change(p, 0, 1);
+                if(p->cvel != -2)
+                    player_dir_change(p, 0, 2);
                 break;
         };
     }
@@ -100,14 +98,12 @@ Player player_init()
     p.body[0].c = COLS / 2;
     p.body[0].face = '@';
     p.rvel = 0;
-    p.cvel = 1;
+    p.cvel = 2;
     p.alive = 1;
 
     p.food.r = generate_coord(LINES - 2, 2);
-    p.food.c = generate_coord(COLS - 2, 1);
+    p.food.c = generate_coord((COLS - 2) / 2, 1) * 2;
     p.food.face = '$';
-
-    p.score = 0;
 
     p.tail = 0;
 

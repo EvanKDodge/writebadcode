@@ -21,7 +21,7 @@ int main(void)
 		if(user.alive)
 		{
 			player_update(&user);
-			usleep(100000);
+			usleep(125000);
 		}
 
 		draw(&user); //draw what needs drawing
@@ -62,7 +62,7 @@ void draw(Player *p)
 			}
 		}
 		mvaddstr(0, 2, "Score:");
-		mvprintw(0, 9, "%d", p->score);
+		mvprintw(0, 9, "%d", p->tail);
 
 		//draw the snake
 		for(i = 0;p->body[i].r > 0 && p->body[i].c > 0;i++)
