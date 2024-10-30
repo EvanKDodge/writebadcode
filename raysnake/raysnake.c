@@ -97,6 +97,8 @@ void player_input(Player *p)
             *p = player_init();
         }
     }
+
+	if(IsKeyPressed(KEY_T)) { ToggleFullscreen(); }
 }
 
 void player_dir_change(Player *p, int rvel, int cvel)

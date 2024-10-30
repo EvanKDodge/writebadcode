@@ -1,0 +1,12 @@
+* Learn how to bring tiles into the game - DONE
+** DrawTextureRec & DrawTexturePro
+** See video - Drawing sprites in raylib (youtube)
+* Start w/moving a character around the screen - DONE
+** Decide how big a level will be - single screen (no scrolling)
+* Representing maps in memory
+** 2D array with x,y coordinates from tilemap
+* Dynamic items to be placed on map - linked list or array
+** Player
+** Treasure
+** Potions
+** Enemies
