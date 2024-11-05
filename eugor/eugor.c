@@ -6,6 +6,11 @@
 #define SPR_WIDTH 16
 #define SPR_HEIGHT 16
 
+typedef struct Tile {
+	int x;
+	int y;
+} Tile;
+
 typedef struct Player {
 	int x;
 	int y;
@@ -17,20 +22,15 @@ typedef struct Player {
 } Player;
 
 int main(void) {
-	int scrWidth;
-	int scrHeight;
-	int monitor;
-	int monitors;
-
+	Player dude;
 	Texture2D tilemap;
 
-	InitWindow(DEF_WIDTH, DEF_HEIGHT, "Eugor");
+	InitWindow(DEF_WIDTH, DEF_HEIGHT, "The Towers of Eugor");
 	SetTargetFPS(60);
 	HideCursor();
 
 	tilemap = LoadTexture("assets/Tilemap/tilemap_packed.png");
 
-	Player dude;
 
 	dude.x = 20;
 	dude.y = 14;
@@ -42,23 +42,23 @@ int main(void) {
 	
 	while(!WindowShouldClose()) {
 		BeginDrawing();
-			ClearBackground(DARKGRAY);
+			ClearBackground(BLACK);
 
 			DrawTexturePro(tilemap,
-				(Rectangle) {
+				(Rectangle) {						// tilemap location and texture size
 					dude.map_x*SPR_WIDTH,
 					dude.map_y*SPR_HEIGHT,
 					SPR_WIDTH * dude.facing,
 					SPR_HEIGHT
 				},
-				(Rectangle) {
+				(Rectangle) {						// render location and scale
 					dude.x*SPR_WIDTH,
 					dude.y*SPR_HEIGHT,
 					SPR_WIDTH*dude.scale_x,
 					SPR_HEIGHT*dude.scale_y
 				},
-				(Vector2){0,0},
-				0,
+				(Vector2){0,0},						// origin (within texture)
+				0.0f,									// rotation
 				WHITE);
 		EndDrawing();
 
