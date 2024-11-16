@@ -42,7 +42,7 @@ int main(void) {
 	
 	while(!WindowShouldClose()) {
 		BeginDrawing();
-			ClearBackground(BLACK);
+			ClearBackground(DARKGRAY);
 
 			DrawTexturePro(tilemap,
 				(Rectangle) {						// tilemap location and texture size
