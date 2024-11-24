@@ -3,20 +3,20 @@
 #include "linked-list.h"
 
 void printList(Node*);
-void addItem(Node*, int);
+void addItem(Node**, int);
 
 int main(void) {
 	Node* head;
 
 	head = NULL;
 
-	addItem(head, 1);
-	addItem(head, 2);
+	addItem(&head, 1);
+	addItem(&head, 2);
 
 	printList(head);
 }
 
-void addItem(Node* head, int num) {
+void addItem(Node** head, int num) {
 	Node* tmp;
 
 	if((tmp = (Node *)malloc(sizeof(Node))) == NULL) {

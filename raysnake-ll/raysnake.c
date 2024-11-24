@@ -31,6 +31,8 @@ void player_update(Player*);
 void draw(Player*);
 int generate_coord(int, int);
 void addItemAtHead(Piece**, int, int, char);
+void addItemAtTail(Piece *, int, int, char);
+
 void printList(Piece*);
 
 int main(void) {
@@ -120,7 +122,19 @@ void player_dir_change(Player *p, int rvel, int cvel)
 // TODO: update for linked-list
 void player_update(Player *p)
 {
-    int i;
+	Piece *tmp;
+
+	tmp = p->head;
+
+	while(tmp != NULL) {
+		if(tmp->next == NULL) {
+			tmp->r += p->rvel;
+			tmp->c += p->cvel;
+		}
+		tmp = tmp->next;
+	}
+/*
+	int i;
 
     for(i = p->tail;i >= 0;i--)
     {
@@ -164,14 +178,15 @@ void player_update(Player *p)
         {
             p->alive = 0;
         }
-    }
+    }*/
 }
 // TODO
 
 void draw(Player *p)
 {
-    int i, j;
-	char s[10];
+    int i, j;	// loop vars (duh)
+	char s[10]; // score
+	Piece *tmp;
 
 	BeginDrawing();
 		ClearBackground(DARKBLUE);
@@ -195,10 +210,12 @@ void draw(Player *p)
 
 			//TODO: update for linked-list
 			//draw the snake
-			for(i = 0;p->body[i].r > 0 && p->body[i].c > 0;i++)
-			{
-				DrawRectangle(p->body[i].c * 16, p->body[i].r * 16, 16, 16, GREEN);
+			tmp = p->head;
+			while(tmp != NULL) {
+				DrawRectangle(tmp->c * 16, tmp->r * 16, 16, 16, GREEN);
+				tmp = tmp->next;
 			}
+
 			//TODO
 
 			//draw the food
@@ -239,6 +256,38 @@ void addItemAtHead(Piece **head, int r, int c, char face) {
 	tmp->next = *head;
 
 	*head = tmp;
+}
+
+void deleteItemAtHead(Piece **head)
+{
+	Piece *tmp;
+
+	tmp = head;
+
+	*head = tmp->next;
+	free(tmp);
+}
+
+void addItemAtTail(Piece *head, int r, int c, char face) {
+	// we're just adding a piece to the end of the linked list (which is actually the head of the snake)
+	Piece *nextNode;
+	Piece *tmp;
+	nextNode = head;
+
+	while(nextNode->next != NULL) {
+		nextNode = nextNode->next;
+	}
+
+	if((tmp = (Piece *)malloc(sizeof(Piece))) == NULL) {
+		printf("Memory allocation error\n");
+		exit(1);
+	}
+
+	tmp->r = r;
+	tmp->c = c;
+	tmp->face = face;
+	tmp->next = NULL;
+	nextNode->next = tmp;
 }
 
 void printList(Piece *head) {
