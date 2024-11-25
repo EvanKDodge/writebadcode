@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <time.h>
 #include "raylib.h"
 
@@ -15,7 +16,6 @@ typedef struct Piece {
 } Piece;
 
 typedef struct Player {
-	//Piece body[MAX_SEGMENTS];
 	Piece *head;
 	int rvel;
 	int cvel;
@@ -30,10 +30,13 @@ void player_dir_change(Player*, int, int);
 void player_update(Player*);
 void draw(Player*);
 int generate_coord(int, int);
-void addItemAtHead(Piece**, int, int, char);
-void addItemAtTail(Piece *, int, int, char);
-
-void printList(Piece*);
+void addItemAtHead(Piece**, int, int);
+void addItemAtTail(Piece *, int, int);
+void deleteItemAtHead(Piece **);
+bool eatsFood(Piece *, int, int);
+Piece getItemAtHead(Piece *);
+bool hitsWall(Piece*);
+bool biteSelf(Piece*);
 
 int main(void) {
 	Player user;
@@ -59,8 +62,6 @@ int main(void) {
 
 	CloseWindow();
 
-	printList(user.head);
-
 	return 0;
 }
 
@@ -69,12 +70,8 @@ Player player_init()
     Player p;
     int i;
 
-    /* p.body[0].r = LINES / 2;
-    p.body[0].c = COLS / 2;
-    p.body[0].face = '@'; */
-
 	p.head = NULL;
-	addItemAtHead(&p.head, LINES / 2, COLS / 2, '@');
+	addItemAtHead(&p.head, LINES / 2, COLS / 2);
 
     p.rvel = 0;
     p.cvel = 1;
@@ -115,72 +112,36 @@ void player_input(Player *p)
 
 void player_dir_change(Player *p, int rvel, int cvel)
 {
-    p->rvel = rvel;
-    p->cvel = cvel;
+	p->rvel = rvel;
+	p->cvel = cvel;
 }
 
-// TODO: update for linked-list
 void player_update(Player *p)
 {
-	Piece *tmp;
+	// basic snake movement
+	addItemAtTail(p->head, p->rvel, p->cvel);
+	deleteItemAtHead(&p->head);
 
-	tmp = p->head;
+	// if snake eats food, it gets bigger
+	if(eatsFood(p->head, p->food.r, p->food.c)) {
+		Piece new = getItemAtHead(p->head);
+		addItemAtHead(&p->head, new.r, new.c);
+		p->tail++;
 
-	while(tmp != NULL) {
-		if(tmp->next == NULL) {
-			tmp->r += p->rvel;
-			tmp->c += p->cvel;
-		}
-		tmp = tmp->next;
+		p->food.r = generate_coord(LINES - 2, 2);
+		p->food.c = generate_coord(COLS - 2, 1);
 	}
-/*
-	int i;
 
-    for(i = p->tail;i >= 0;i--)
-    {
-        if(i == 0)
-        {
-            p->body[i].r += p->rvel;
-            p->body[i].c += p->cvel;
+	// if snake hits a wall, it dies
+	if(hitsWall(p->head)) {
+		p->alive = 0;
+	}
 
-            // if the snake eats food
-            if(p->body[i].r == p->food.r && p->body[i].c == p->food.c)
-            {
-                p->body[p->tail+1].r = p->body[p->tail].r;
-                p->body[p->tail+1].c = p->body[p->tail].c;
-                p->body[p->tail+1].face = '#';
-                p->tail++;
-
-                p->food.r = generate_coord(LINES - 2, 2);
-                p->food.c = generate_coord(COLS - 2, 1);
-            }
-
-            // if the snake hits a wall, it dies
-            if(p->body[i].r < 2 || p->body[i].r > (LINES - 2) ||
-                p->body[i].c < 1 || p->body[i].c > (COLS - 2))
-            {
-                p->alive = 0;
-            }
-        }
-        else
-        {
-            p->body[i].r = p->body[i-1].r;
-            p->body[i].c = p->body[i-1].c;
-        }
-    }
-
-    // if the snake bites itself, it dies
-    for(i = 1;i <= p->tail;i++)
-    {
-        if(p->body[i].r == p->body[0].r
-            && p->body[i].c == p->body[0].c
-            && i > 1)
-        {
-            p->alive = 0;
-        }
-    }*/
+	// if snake bites itself, it dies
+	if(biteSelf(p->head)) {
+		p->alive = 0;
+	}
 }
-// TODO
 
 void draw(Player *p)
 {
@@ -208,15 +169,12 @@ void draw(Player *p)
 			sprintf(s, "%d", p->tail);
 			DrawText(s, 80, 2, 10, WHITE);
 
-			//TODO: update for linked-list
 			//draw the snake
 			tmp = p->head;
 			while(tmp != NULL) {
 				DrawRectangle(tmp->c * 16, tmp->r * 16, 16, 16, GREEN);
 				tmp = tmp->next;
 			}
-
-			//TODO
 
 			//draw the food
 			DrawRectangle(p->food.c * 16, p->food.r * 16, 16, 16, PINK);
@@ -242,7 +200,7 @@ int generate_coord(int high, int low)  // time and stdlib
 
 // linked list functions:
 
-void addItemAtHead(Piece **head, int r, int c, char face) {
+void addItemAtHead(Piece **head, int r, int c) {
 	Piece *tmp;
 
 	if((tmp = (Piece *)malloc(sizeof(Piece))) == NULL) {
@@ -252,7 +210,6 @@ void addItemAtHead(Piece **head, int r, int c, char face) {
 
 	tmp->r = r;
 	tmp->c = c;
-	tmp->face = face;
 	tmp->next = *head;
 
 	*head = tmp;
@@ -262,13 +219,13 @@ void deleteItemAtHead(Piece **head)
 {
 	Piece *tmp;
 
-	tmp = head;
+	tmp = *head;
 
 	*head = tmp->next;
 	free(tmp);
 }
 
-void addItemAtTail(Piece *head, int r, int c, char face) {
+void addItemAtTail(Piece *head, int r, int c) {
 	// we're just adding a piece to the end of the linked list (which is actually the head of the snake)
 	Piece *nextNode;
 	Piece *tmp;
@@ -283,19 +240,76 @@ void addItemAtTail(Piece *head, int r, int c, char face) {
 		exit(1);
 	}
 
-	tmp->r = r;
-	tmp->c = c;
-	tmp->face = face;
+	tmp->r = nextNode->r + r;
+	tmp->c = nextNode->c + c;
 	tmp->next = NULL;
 	nextNode->next = tmp;
 }
 
-void printList(Piece *head) {
+bool eatsFood(Piece *head, int r, int c) {
+	bool eatsFood = false;
 	Piece *nextNode;
 	nextNode = head;
 
-	do {
-		printf("%d %d %c\n", nextNode->r, nextNode->c, nextNode->face);
+	while (nextNode->next != NULL) {
 		nextNode = nextNode->next;
-	} while(nextNode != NULL);
+	}
+
+	if(nextNode->r == r && nextNode->c == c) {
+		eatsFood = true;
+	}
+
+	return eatsFood;
+}
+
+bool hitsWall(Piece *head) {
+	bool hitsWall = false;
+	Piece *nextNode;
+	nextNode = head;
+
+	while (nextNode->next != NULL) {
+		nextNode = nextNode->next;
+	}
+
+	if(nextNode->r < 2 || nextNode->r > (LINES - 2)
+		|| nextNode->c < 1 || nextNode->c > (COLS-2)) {
+
+		hitsWall = true;
+	}
+
+	return hitsWall;
+}
+
+bool biteSelf(Piece *head) {
+	bool biteSelf = false;
+	Piece *nextNode;
+	int r, c;
+	nextNode = head;
+
+	while (nextNode->next != NULL) {
+		nextNode = nextNode->next;
+	}
+
+	r = nextNode->r;
+	c = nextNode->c;
+
+	nextNode = head;
+	while(nextNode != NULL) {
+		if(nextNode->c == c && nextNode->r == r && nextNode->next != NULL
+			&& nextNode->next->next != NULL) {
+			biteSelf = true;
+		}
+		nextNode = nextNode->next;
+	}
+
+	return biteSelf;
+}
+
+Piece getItemAtHead(Piece *head) {
+	Piece p;
+
+	p.r = head->r;
+	p.c = head->c;
+
+	return p;
 }
