@@ -11,7 +11,6 @@
 typedef struct Piece {
 	int r;
 	int c;
-	char face;
 	struct Piece *next;
 } Piece;
 
@@ -79,7 +78,6 @@ Player player_init()
 
     p.food.r = generate_coord(LINES - 2, 2);
     p.food.c = generate_coord(COLS - 2, 1);
-    p.food.face = '$';
 
     p.tail = 0;
 
@@ -221,8 +219,10 @@ void deleteItemAtHead(Piece **head)
 
 	tmp = *head;
 
-	*head = tmp->next;
-	free(tmp);
+	if(tmp != NULL) {
+		*head = tmp->next;
+		free(tmp);
+	}
 }
 
 void addItemAtTail(Piece *head, int r, int c) {
