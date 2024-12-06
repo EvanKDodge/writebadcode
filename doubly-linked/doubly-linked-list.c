@@ -5,18 +5,46 @@
 
 int main(void) {
 	List dList;
+	List dList2;
+	List dList3;
 
 	dList.head = NULL;
 	dList.tail = NULL;
 
-	insertAtHead(&dList.head, &dList.tail, "test");
-	insertAtHead(&dList.head, &dList.tail, "fart");
-	insertAtHead(&dList.head, &dList.tail, "massive turd");
-	insertAtHead(&dList.head, &dList.tail, "uber dump");
+	insertAtHead(&dList.head, &dList.tail, "Lego(tm) Batman(tm) Jams:");
+	insertAtHead(&dList.head, &dList.tail, "darkness");
+	insertAtHead(&dList.head, &dList.tail, "no parents");
+	insertAtHead(&dList.head, &dList.tail, "really rich");
+	insertAtHead(&dList.head, &dList.tail, "kinda makes it better");
 
-	printForward(dList.head);
 	printReverse(dList.tail);
+	printForward(dList.head);
 	deleteAllFromHead(&dList.head);
+
+	dList2.head = NULL;
+	dList2.tail = NULL;
+
+	insertAtTail(&dList2.head, &dList2.tail, "one");
+	insertAtTail(&dList2.head, &dList2.tail, "two");
+	insertAtTail(&dList2.head, &dList2.tail, "three");
+	insertAtTail(&dList2.head, &dList2.tail, "four");
+	insertAtTail(&dList2.head, &dList2.tail, "five");
+
+	printReverse(dList2.tail);
+	printForward(dList2.head);
+	deleteAllFromHead(&dList2.head);
+
+	dList3.head = NULL;
+	dList3.tail = NULL;
+
+	insertAtHead(&dList3.head, &dList3.tail, "one");
+	insertAtTail(&dList3.head, &dList3.tail, "two");
+	insertAtHead(&dList3.head, &dList3.tail, "three");
+	insertAtTail(&dList3.head, &dList3.tail, "four");
+
+	printForward(dList3.head);
+	printReverse(dList3.tail);
+	deleteAllFromTail(&dList3.tail);
 }
 
 void insertAtHead(Node **head, Node **tail, char *s) {
@@ -35,6 +63,34 @@ void insertAtHead(Node **head, Node **tail, char *s) {
 
 	*head = tmp;
 	if(*tail == NULL) *tail = tmp;
+}
+
+void insertAtTail(Node **head, Node **tail, char *s) {
+	Node *tmp;
+
+	if((tmp = (Node *)malloc(sizeof(Node))) == NULL) {
+		printf("Memory allocation error\n");
+		exit(1);
+	}
+
+	strcpy(tmp->str, s);
+	tmp->prev = *tail;
+
+	if(*tail != NULL) tmp->prev->next = tmp;
+	tmp->next = NULL;
+
+	*tail = tmp;
+	if(*head == NULL) *head = tmp;
+}
+
+void insertAtPosFromHead(Node **head, int pos, char*) {
+	// handle inserting directing at head
+	// handle pos > list length
+	Node *tmp;
+	Node *nextNode;
+	int currentPos = 0;
+
+	while
 }
 
 void printForward(Node *head) {
@@ -70,6 +126,18 @@ void deleteAllFromHead(Node **head) {
 		*head = nextNode->next;
 		free(nextNode);
 		nextNode = *head;
+	}
+}
+
+void deleteAllFromTail(Node **tail) {
+	Node *prevNode;
+
+	prevNode = *tail;
+
+	while(prevNode != NULL) {
+		*tail = prevNode->prev;
+		free(prevNode);
+		prevNode = *tail;
 	}
 }
 /*
