@@ -1,0 +1,12 @@
+V0-VF - general purpose registers (8 bit) - array
+I - Index Register (16 bit)
+PC - Program Counter (16 bit)
+Stack - Array of 16-bit values that hold PC values
+SP - holds the top of the stack (8 bit) - index to Stack array
+DT - Delay Timer (8 bit)
+ST - Sound Timer (8 bit)
+
+Memory - 0x000-0xFFF (4K)
+
+16 input keys - 0-9 & A-F
+64x32 Monochrome Display Memory

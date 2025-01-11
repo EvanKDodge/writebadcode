@@ -50,47 +50,106 @@ int main(void) {
 void insertAtHead(Node **head, Node **tail, char *s) {
 	Node *tmp;
 
+	// create a new node
 	if((tmp = (Node *)malloc(sizeof(Node))) == NULL) {
 		printf("Memory allocation error\n");
 		exit(1);
 	}
 
+	// place the node at the beginning of the list
 	strcpy(tmp->str, s);
 	tmp->next = *head;
 
+	// if this isn't a new list...
+	// make sure the next item points back to the new item
 	if(*head != NULL) tmp->next->prev = tmp;
-	tmp->prev = NULL;
+	tmp->prev = NULL;	// tmp is the head, set prev to NULL
 
+	// officially make the new item the head
 	*head = tmp;
+
+	// if it's an empty list make sure the tail is set too
 	if(*tail == NULL) *tail = tmp;
 }
 
 void insertAtTail(Node **head, Node **tail, char *s) {
 	Node *tmp;
 
+	// create a new node
 	if((tmp = (Node *)malloc(sizeof(Node))) == NULL) {
 		printf("Memory allocation error\n");
 		exit(1);
 	}
 
+	// place node at end of list
 	strcpy(tmp->str, s);
 	tmp->prev = *tail;
 
+	// if this isn't a new list...
+	// make sure the previous item points to the new item
 	if(*tail != NULL) tmp->prev->next = tmp;
-	tmp->next = NULL;
+	tmp->next = NULL;	// tmp is the tail, set next to NULL
 
+	// officially make the new item the tail
 	*tail = tmp;
+
+	// if it's an empty list make sure the head is set too
 	if(*head == NULL) *head = tmp;
 }
 
-void insertAtPosFromHead(Node **head, int pos, char*) {
-	// handle inserting directing at head
+void insertAtPosFromHead(Node **head, int pos, char *s) {
+	// handle insertion at given position from head
 	// handle pos > list length
 	Node *tmp;
 	Node *nextNode;
 	int currentPos = 0;
 
-	while
+	nextNode = head;
+
+	while(nextNode != NULL) {
+		// traverse to next node only if
+		//  we're not at the right position yet
+		//  and we're not at the end
+		//  of the list
+		if(currentPos != pos && nextNode->next != NULL) {
+			currentPos++;
+		}
+		else break;
+		nextNode = nextNode->next;
+	}
+
+	if(currentPos == pos) {
+		// create a new node
+		if((tmp = (Node *)malloc(sizeof(Node))) == NULL) {
+			printf("Memory allocation error\n");
+			exit(1);
+		}
+
+		// 3 cases:
+		// new node at the head of the list
+		// new node sandwiched between two nodes
+		// new node at the tail of the list
+		// new node in an empty list
+
+		strcpy(tmp->str, s);
+		tmp->prev = *tail;
+
+		// if this isn't a new list...
+		// make sure the previous item points to the new item
+		if(*tail != NULL) tmp->prev->next = tmp;
+		tmp->next = NULL;	// tmp is the tail, set next to NULL
+
+		// officially make the new item the tail
+		*tail = tmp;
+
+		// if it's an empty list make sure the head is set too
+		if(*head == NULL) *head = tmp;
+	}
+	else {
+		// position not found
+		// ... could fail silently and do nothing here ...
+		// ... if we want to be lazy
+	}
 }
 
 void printForward(Node *head) {
