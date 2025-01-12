@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "raylib.h"
+
+#define COLS 64
+#define ROWS 32
 
 typedef struct Chip8_t {
 	uint8_t mem[4096];
@@ -29,7 +33,13 @@ int main(int argc, char **argv) {
 	else {
 		init(&c8);
 		loadROM(argv[1], &c8);
+
+		InitWindow(COLS * 10, ROWS * 10, "Chip8 Emulator");
+		SetTargetFPS(60);
+
 		runChip8(&c8);
+
+		CloseWindow();
 	}
 
 	return 0;
@@ -79,11 +89,11 @@ void runChip8(Chip8* c8) {
 	uint16_t T, X, Y, N;
 	uint16_t NN, NNN;
 
-	while(c8->PC <= 0x228) {
+	while(!WindowShouldClose()) {
 		// fetch
 		curInst = c8->mem[c8->PC] << 8 | c8->mem[c8->PC + 1];
 
-		printf("%04x\t%04x\n", c8->PC, curInst);
+		//printf("%04x\t%04x\n", c8->PC, curInst);
 
 		c8->PC += 2;
 
@@ -117,5 +127,8 @@ void runChip8(Chip8* c8) {
 				break;
 			default:
 		}
+
+		BeginDrawing();
+		EndDrawing();
 	}
 }

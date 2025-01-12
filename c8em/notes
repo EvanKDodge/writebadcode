@@ -10,3 +10,17 @@ Memory - 0x000-0xFFF (4K)
 
 16 input keys - 0-9 & A-F
 64x32 Monochrome Display Memory
+
+TODO:
+
+Setup rendering loop
+* ESC key to exit - DONE
+
+Create instructions for IBM Logo:
+
+00E0
+1NNN - done
+6XNN - done
+7XNN - done
+ANNN - done
+DXYN
