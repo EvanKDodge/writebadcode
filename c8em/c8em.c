@@ -30,10 +30,6 @@ int main(int argc, char **argv) {
 		init(&c8);
 		loadROM(argv[1], &c8);
 		runChip8(&c8);
-
-		/*for(i = 0;i < 0x1000;i++) {
-			printf("%03x\t%02x\n", i, c8.mem[i]);
-		}*/
 	}
 
 	return 0;
@@ -47,6 +43,12 @@ void init(Chip8 *c8) {
 	c8->SP = 0;
 	c8->DT = 0;
 	c8->ST = 0;
+	c8->I = 0;
+
+	// zero V registers
+	for(i = 0;i <= 0xF;i++) {
+		c8->V[i] = 0;
+	}
 
 	// zero out memory
 	for(i = 0;i < 0x1000;i++) {
@@ -56,7 +58,7 @@ void init(Chip8 *c8) {
 
 void loadROM(char* s, Chip8* c8) {
 	FILE *inFile;
-	int i = 0x200;	// we start loading mem[512]
+	int i = 0x200;	// we start loading at mem[512]
 
 	inFile = fopen(s, "rb");
 	if(inFile == NULL) {
@@ -96,22 +98,22 @@ void runChip8(Chip8* c8) {
 		// execute
 		switch(T) {
 			case 0:
-				printf("Clear screen or return from subroutine.\n");
+				printf("Clear screen or return from subroutine.\n\n");
 				break;
 			case 1:
-				printf("Unconditional jump.\n");
+				c8->PC = NNN;
 				break;
 			case 6:
-				printf("Set VX register to a value\n");
+				c8->V[X] = NN;
 				break;
 			case 7:
-				printf("Add NN to VX\n");
+				c8->V[X] += NN;
 				break;
 			case 0xa:
-				printf("Set I to NNN\n");
+				c8->I = NNN;
 				break;
 			case 0xd:
-				printf("Draw sprite to screen\n");
+				printf("Draw sprite to screen\n\n");
 				break;
 			default:
 		}
