@@ -87,31 +87,31 @@ void runChip8(Chip8* c8) {
 
 		// decode
 		T = (0xF000 & curInst) >> 12;
-		printf("%x\n", T);
 		X = (0x0F00 & curInst) >> 8;
-		printf("%x\n", X);
 		Y = (0x00F0 & curInst) >> 4;
-		printf("%x\n", Y);
 		N = (0x000F & curInst);
-		printf("%x\n", N);
 		NN = (0x00FF & curInst);
-		printf("%02x\n", NN);
 		NNN = (0x0FFF & curInst);
-		printf("%03x\n", NNN);
 
 		// execute
 		switch(T) {
 			case 0:
+				printf("Clear screen or return from subroutine.\n");
 				break;
 			case 1:
+				printf("Unconditional jump.\n");
 				break;
 			case 6:
+				printf("Set VX register to a value\n");
 				break;
 			case 7:
+				printf("Add NN to VX\n");
 				break;
-			case a:
+			case 0xa:
+				printf("Set I to NNN\n");
 				break;
-			case d:
+			case 0xd:
+				printf("Draw sprite to screen\n");
 				break;
 			default:
 		}
