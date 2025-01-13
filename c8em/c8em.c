@@ -8,7 +8,7 @@
 
 typedef struct Chip8_t {
 	uint8_t mem[4096];
-	uint8_t display[64][32];
+	uint8_t display[COLS * ROWS];
 	uint16_t stack[16];
 	uint8_t V[16];
 	uint16_t PC;
@@ -21,6 +21,7 @@ typedef struct Chip8_t {
 void init(Chip8*);
 void loadROM(char*, Chip8*);
 void runChip8(Chip8*);
+void draw(Chip8*);
 
 int main(int argc, char **argv) {
 	Chip8 c8;
@@ -64,6 +65,15 @@ void init(Chip8 *c8) {
 	for(i = 0;i < 0x1000;i++) {
 		c8->mem[i] = 0;
 	}
+
+	// display test pattern
+	for(i = 0;i < (COLS * ROWS);i++) {
+		if(i % 2 == 0) {
+			c8->display[i] = 0;
+		} else {
+			c8->display[i] = 1;
+		}
+	}
 }
 
 void loadROM(char* s, Chip8* c8) {
@@ -88,6 +98,7 @@ void runChip8(Chip8* c8) {
 	uint16_t curInst;
 	uint16_t T, X, Y, N;
 	uint16_t NN, NNN;
+	int i; //, x, y;
 
 	while(!WindowShouldClose()) {
 		// fetch
@@ -108,7 +119,17 @@ void runChip8(Chip8* c8) {
 		// execute
 		switch(T) {
 			case 0:
-				printf("Clear screen or return from subroutine.\n\n");
+				switch(NN) {
+					case 0xe0:
+						for(i = 0;i < (COLS * ROWS);i++) {
+							c8->display[i] = 0;
+						}
+						break;
+					case 0xee:
+						c8->PC = c8->stack[c8->SP];
+						c8->SP--;
+						break;
+				}
 				break;
 			case 1:
 				c8->PC = NNN;
@@ -128,7 +149,23 @@ void runChip8(Chip8* c8) {
 			default:
 		}
 
-		BeginDrawing();
-		EndDrawing();
+		draw(c8);
 	}
+}
+
+void draw(Chip8* c8) {
+	int x, y;
+
+	BeginDrawing();
+		for(x = 0;x < COLS;x++) {
+			for(y = 0;y < ROWS;y++) {
+				if(c8->display[64 * y + x] == 1) {
+					DrawRectangle(x * 10, y * 10, 10, 10, WHITE);
+				}
+				else {
+					DrawRectangle(x * 10, y * 10, 10, 10, BLACK);
+				}
+			}
+		}
+	EndDrawing();
 }

@@ -10,6 +10,7 @@ Memory - 0x000-0xFFF (4K)
 
 16 input keys - 0-9 & A-F
 64x32 Monochrome Display Memory
+* Use ROWS * Y + X to calculate index based on (x,y) coords
 
 TODO:
 
@@ -18,7 +19,8 @@ Setup rendering loop
 
 Create instructions for IBM Logo:
 
-00E0
+00E0 - done
+00EE - done (extra, but I did it anyway)
 1NNN - done
 6XNN - done
 7XNN - done
