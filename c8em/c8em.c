@@ -98,53 +98,77 @@ void runChip8(Chip8* c8) {
 	uint16_t curInst;
 	uint16_t T, X, Y, N;
 	uint16_t NN, NNN;
-	int i; //, x, y;
+	int i, j, x, y, tmp;
 
 	while(!WindowShouldClose()) {
 		// fetch
 		curInst = c8->mem[c8->PC] << 8 | c8->mem[c8->PC + 1];
 
-		//printf("%04x\t%04x\n", c8->PC, curInst);
-
 		c8->PC += 2;
 
 		// decode
-		T = (0xF000 & curInst) >> 12;
-		X = (0x0F00 & curInst) >> 8;
-		Y = (0x00F0 & curInst) >> 4;
-		N = (0x000F & curInst);
-		NN = (0x00FF & curInst);
-		NNN = (0x0FFF & curInst);
+		T = (0xF000 & curInst) >> 12;	// instruction type
+		X = (0x0F00 & curInst) >> 8;	// 2nd nibble
+		Y = (0x00F0 & curInst) >> 4;	// 3rd nibble
+		N = (0x000F & curInst);			// 4th nibble
+		NN = (0x00FF & curInst);		// last 2 nibbles
+		NNN = (0x0FFF & curInst);		// last 3 nibbles		
 
 		// execute
 		switch(T) {
 			case 0:
 				switch(NN) {
 					case 0xe0:
+						// CLEAR SCREEN
 						for(i = 0;i < (COLS * ROWS);i++) {
 							c8->display[i] = 0;
 						}
 						break;
 					case 0xee:
+						// RETURN FROM 2NNN
 						c8->PC = c8->stack[c8->SP];
 						c8->SP--;
 						break;
 				}
 				break;
 			case 1:
+				// UNCONDITIONAL JUMP
 				c8->PC = NNN;
 				break;
 			case 6:
+				// SET V REGISTER TO VALUE
 				c8->V[X] = NN;
 				break;
 			case 7:
+				// ADD VALUE TO V REGISTER
 				c8->V[X] += NN;
 				break;
 			case 0xa:
+				// SET INDEX REGISTER
 				c8->I = NNN;
 				break;
 			case 0xd:
-				printf("Draw sprite to screen\n\n");
+				// DRAW SPRITE TO SCREEN
+				y = c8->V[Y] & 31;
+				c8->V[0xF] = 0;
+
+				for(i = c8->I;i < (c8->I + N);i++) {
+					x = c8->V[X] & 63;
+					for(j = 7;j >= 0;j--) {
+						tmp = (c8->mem[i] >> j) & 1;
+						if(tmp == 1 && c8->display[64 * y + x] == 1) {
+							c8->display[64 * y + x] = 0;
+							c8->V[0xF] = 1;
+						}
+						if(tmp == 1 && c8->display[64 * y + x] == 0) {
+							c8->display[64 * y + x] = 1;
+						}
+						if(x > (COLS - 1)) break;
+						x++;
+					}
+					y++;
+					if(y > (ROWS - 1)) break;
+				}
 				break;
 			default:
 		}
