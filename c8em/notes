@@ -20,9 +20,25 @@ Setup rendering loop
 Create instructions for IBM Logo:
 
 00E0 - done
-00EE - done (extra, but I did it anyway)
+00EE - done
 1NNN - done
+2NNN - done
+3XNN - done
+4XNN - done
+5XY0 - done
 6XNN - done
 7XNN - done
+8XY0 - done
+8XY1 - done
+8XY2 - done
+8XY3 - done
+8XY4 - set VX = VX + VY (modifies VF in overflow unlike 7NNN)
+8XY5 - set VX = VX - VY (modifies VF in underflow)
+8XY6 - done (add option to set VX = VY?)
+8XY7 - set VX = VY - VX (modifies VF in underflow)
+8XYE - done (add option to set VX = VY?)
+9XY0 - done
 ANNN - done
-DXYN
+DXYN - done
+
+Worrying alot about "getting it right the first time"...maybe avoid the perfectionism, but implement a debugger so we can feel "safe"

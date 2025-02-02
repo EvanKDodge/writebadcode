@@ -126,14 +126,32 @@ void runChip8(Chip8* c8) {
 						break;
 					case 0xee:
 						// RETURN FROM 2NNN
-						c8->PC = c8->stack[c8->SP];
 						c8->SP--;
+						c8->PC = c8->stack[c8->SP];
 						break;
 				}
 				break;
 			case 1:
 				// UNCONDITIONAL JUMP
 				c8->PC = NNN;
+				break;
+			case 2:
+				// CALL SUBROUTINE
+				c8->stack[c8->SP] = c8->PC;
+				c8->SP++;
+				c8->PC = NNN;
+				break;
+			case 3:
+				// SKIP if VX = NN
+				if(c8->V[X] == NN) c8->PC += 2;
+				break;
+			case 4:
+				// SKIP if VX != NN
+				if(c8->V[X] != NN) c8->PC += 2;
+				break;
+			case 5:
+				// SKIP if VX == VY
+				if(c8->V[X] == c8->V[Y]) c8->PC += 2;
 				break;
 			case 6:
 				// SET V REGISTER TO VALUE
@@ -142,6 +160,74 @@ void runChip8(Chip8* c8) {
 			case 7:
 				// ADD VALUE TO V REGISTER
 				c8->V[X] += NN;
+				break;
+			case 8:
+				switch(N) {
+					case 0:
+						// SET VX to the value of VY
+						c8->V[X] = c8->V[Y];
+						break;
+					case 1:
+						// SET VX to VX OR VY
+						c8->V[X] = c8->V[X] | c8->V[Y];
+						break;
+					case 2:
+						// SET VX to VX AND VY
+						c8->V[X] = c8->V[X] & c8->V[Y];
+						break;
+					case 3:
+						// SET VX to VX XOR VY
+						c8->V[X] = c8->V[X] ^ c8->V[Y];
+						break;
+					case 4:
+						// SET VX to VX + VY
+						tmp = c8->V[X] + c8->V[Y];
+						c8->V[0xF] = 0;
+						if(tmp > 255) {
+							c8->V[0xF] = 1;
+						}
+						c8->V[X] = tmp;
+						break;
+					case 5:
+						// SET VX to VX - VY
+						c8->V[X] = c8->V[X] - c8->V[Y];
+						c8->V[0xF] = 0;
+						if(c8->V[X] >= c8->V[Y]) {
+							c8->V[0xF] = 1;
+						}
+						break;
+					case 6:
+						tmp = c8->V[X] & 1; //is rightmost 0 or 1?
+						c8->V[X] = c8->V[X] >> 1;
+						
+						c8->V[0xF] = 0;
+						if(tmp) {
+							c8->V[0xF] = 1;
+						} 
+						break;
+					case 7:
+						// SET VX to VY - VX
+						c8->V[X] = c8->V[Y] - c8->V[X];
+						c8->V[0xF] = 0;
+						if(c8->V[Y] >= c8->V[X]) {
+							c8->V[0xF] = 1;
+						}
+						break;
+					case 0xE:
+						tmp = (c8->V[X] & 128) >> 7; //is leftmost 0 or 1?
+						c8->V[X] = c8->V[X] << 1;
+						
+						c8->V[0xF] = 0;
+						if(tmp) {
+							c8->V[0xF] = 1;
+						} 
+
+						break;
+				}
+				break;
+			case 9:
+				// SKIP if VX != VY
+				if(c8->V[X] != c8->V[Y]) c8->PC += 2;
 				break;
 			case 0xa:
 				// SET INDEX REGISTER
@@ -170,7 +256,6 @@ void runChip8(Chip8* c8) {
 					if(y > (ROWS - 1)) break;
 				}
 				break;
-			default:
 		}
 
 		draw(c8);
