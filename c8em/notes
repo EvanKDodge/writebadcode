@@ -39,6 +39,19 @@ Create instructions for IBM Logo:
 8XYE - done (add option to set VX = VY?)
 9XY0 - done
 ANNN - done
+BNNN - done (add option to use VX instead of V0?)
+CXNN - done (not tested)
 DXYN - done
+EX9E - done (not tested)
+EXA1 - done (not tested)
+FX07 - set VX to current value of delay timer
+FX15 - set delay timer to the vale in VX
+FX18 - set the sound timer to the value in VX
+FX1E - add the value in VX to I
+FX0A - wait for key
+FX29
+FX33
+FX55
+FX65
 
 Worrying alot about "getting it right the first time"...maybe avoid the perfectionism, but implement a debugger so we can feel "safe"

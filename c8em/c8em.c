@@ -1,16 +1,19 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <time.h>
 #include "raylib.h"
 
 #define COLS 64
 #define ROWS 32
+#define SIZE 10
 
 typedef struct Chip8_t {
 	uint8_t mem[4096];
 	uint8_t display[COLS * ROWS];
 	uint16_t stack[16];
 	uint8_t V[16];
+	uint8_t keypad[16];
 	uint16_t PC;
 	uint16_t I;
 	uint8_t SP;
@@ -21,7 +24,9 @@ typedef struct Chip8_t {
 void init(Chip8*);
 void loadROM(char*, Chip8*);
 void runChip8(Chip8*);
+void user_input(Chip8*);
 void draw(Chip8*);
+int random_byte();
 
 int main(int argc, char **argv) {
 	Chip8 c8;
@@ -35,13 +40,15 @@ int main(int argc, char **argv) {
 		init(&c8);
 		loadROM(argv[1], &c8);
 
-		InitWindow(COLS * 10, ROWS * 10, "Chip8 Emulator");
+		InitWindow(COLS * SIZE, ROWS * SIZE, "Chip8 Emulator");
 		SetTargetFPS(60);
 
 		runChip8(&c8);
 
 		CloseWindow();
 	}
+
+	srand(time(NULL));	// seed random number generator with timer
 
 	return 0;
 }
@@ -105,6 +112,8 @@ void runChip8(Chip8* c8) {
 		curInst = c8->mem[c8->PC] << 8 | c8->mem[c8->PC + 1];
 
 		c8->PC += 2;
+
+		user_input(c8);
 
 		// decode
 		T = (0xF000 & curInst) >> 12;	// instruction type
@@ -233,6 +242,12 @@ void runChip8(Chip8* c8) {
 				// SET INDEX REGISTER
 				c8->I = NNN;
 				break;
+			case 0xb:
+				// SET INDEX REGISTER to NNN + V0 and Jump to that address
+				c8->PC = NNN + c8->V[0];
+			case 0xc:
+				// genrate random number
+				c8->V[X] = random_byte() & NN;
 			case 0xd:
 				// DRAW SPRITE TO SCREEN
 				y = c8->V[Y] & 31;
@@ -256,10 +271,45 @@ void runChip8(Chip8* c8) {
 					if(y > (ROWS - 1)) break;
 				}
 				break;
+			case 0xe:
+				switch(NN) {
+					case 0x9e:
+						if(c8->keypad[c8->V[X]]) c8->PC += 2;
+						break;
+					case 0xa1:
+						if(!c8->keypad[c8->V[X]]) c8->PC += 2;
+						break;
+				}
+				break;
 		}
 
 		draw(c8);
 	}
+}
+
+void user_input(Chip8* c8) {
+	int i;
+
+	for(i = 0;i <= 0xF;i++) {
+		c8->keypad[i] = 0;
+	}
+
+	if(IsKeyPressed(KEY_ONE)) c8->keypad[1] = 1;
+	if(IsKeyPressed(KEY_TWO)) c8->keypad[2] = 1;
+	if(IsKeyPressed(KEY_THREE)) c8->keypad[3] = 1;
+	if(IsKeyPressed(KEY_FOUR)) c8->keypad[0xC] = 1;
+	if(IsKeyPressed(KEY_Q)) c8->keypad[4] = 1;
+	if(IsKeyPressed(KEY_W)) c8->keypad[5] = 1;
+	if(IsKeyPressed(KEY_E)) c8->keypad[6] = 1;
+	if(IsKeyPressed(KEY_R)) c8->keypad[0xD] = 1;
+	if(IsKeyPressed(KEY_A)) c8->keypad[7] = 1;
+	if(IsKeyPressed(KEY_S)) c8->keypad[8] = 1;
+	if(IsKeyPressed(KEY_D)) c8->keypad[9] = 1;
+	if(IsKeyPressed(KEY_F)) c8->keypad[0xE] = 1;
+	if(IsKeyPressed(KEY_Z)) c8->keypad[0xA] = 1;
+	if(IsKeyPressed(KEY_X)) c8->keypad[0] = 1;
+	if(IsKeyPressed(KEY_C)) c8->keypad[0xB] = 1;
+	if(IsKeyPressed(KEY_V)) c8->keypad[0xF] = 1;
 }
 
 void draw(Chip8* c8) {
@@ -269,12 +319,20 @@ void draw(Chip8* c8) {
 		for(x = 0;x < COLS;x++) {
 			for(y = 0;y < ROWS;y++) {
 				if(c8->display[64 * y + x] == 1) {
-					DrawRectangle(x * 10, y * 10, 10, 10, WHITE);
+					DrawRectangle(x * SIZE, y * SIZE, SIZE, SIZE, WHITE);
 				}
 				else {
-					DrawRectangle(x * 10, y * 10, 10, 10, BLACK);
+					DrawRectangle(x * SIZE, y * SIZE, SIZE, SIZE, BLACK);
 				}
 			}
 		}
 	EndDrawing();
+}
+
+int random_byte() {
+	int num;
+
+	num = rand() % 256;
+
+	return num;
 }
