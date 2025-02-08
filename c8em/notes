@@ -45,13 +45,13 @@ DXYN - done
 EX9E - done (not tested)
 EXA1 - done (not tested)
 FX07 - set VX to current value of delay timer
-FX15 - set delay timer to the vale in VX
+FX15 - set delay timer to the value in VX
 FX18 - set the sound timer to the value in VX
 FX1E - add the value in VX to I
 FX0A - wait for key
-FX29
-FX33
-FX55
-FX65
+FX29 - set I to address of hex character in VX
+FX33 - BCD conversion
+FX55 - store values in V0-VX in memory starting at I
+FX65 - store values in memory starting at I to V0-VX
 
 Worrying alot about "getting it right the first time"...maybe avoid the perfectionism, but implement a debugger so we can feel "safe"

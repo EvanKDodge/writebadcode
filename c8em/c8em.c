@@ -25,6 +25,7 @@ void init(Chip8*);
 void loadROM(char*, Chip8*);
 void runChip8(Chip8*);
 void user_input(Chip8*);
+uint8_t getKeyValue(Chip8*);
 void draw(Chip8*);
 int random_byte();
 
@@ -55,6 +56,24 @@ int main(int argc, char **argv) {
 
 void init(Chip8 *c8) {
 	int i;
+	uint8_t font[] = {
+		0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+		0x20, 0x60, 0x20, 0x20, 0x70, // 1
+		0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+		0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+		0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+		0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+		0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+		0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+		0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+		0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+		0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+		0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+		0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+		0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+		0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+		0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+	};
 
 	// init registers
 	c8->PC = 0x200;
@@ -68,9 +87,14 @@ void init(Chip8 *c8) {
 		c8->V[i] = 0;
 	}
 
-	// zero out memory
+	// zero out memory and add fonts
 	for(i = 0;i < 0x1000;i++) {
-		c8->mem[i] = 0;
+		if(i >= 0x50 && i <= 0x9f) {
+			c8->mem[i] = font[i - 0x50];
+		}
+		else {
+			c8->mem[i] = 0;
+		}
 	}
 
 	// display test pattern
@@ -106,6 +130,7 @@ void runChip8(Chip8* c8) {
 	uint16_t T, X, Y, N;
 	uint16_t NN, NNN;
 	int i, j, x, y, tmp;
+	uint8_t tmp8;
 
 	while(!WindowShouldClose()) {
 		// fetch
@@ -113,8 +138,12 @@ void runChip8(Chip8* c8) {
 
 		c8->PC += 2;
 
+		// has to happen every frame
 		user_input(c8);
-
+		draw(c8);
+		if(c8->DT > 0) c8->DT--;
+		if(c8->ST > 0) c8->ST--; // should play audio...not yet...
+		
 		// decode
 		T = (0xF000 & curInst) >> 12;	// instruction type
 		X = (0x0F00 & curInst) >> 8;	// 2nd nibble
@@ -281,9 +310,60 @@ void runChip8(Chip8* c8) {
 						break;
 				}
 				break;
+			case 0xf:
+				switch(NN) {
+					case 0x07:
+						// set VX to current value of DT
+						c8->V[X] = c8->DT;
+						break;
+					case 0x15:
+						// set delay timer to value of VX
+						c8->DT = c8->V[X];
+						break;
+					case 0x18:
+						// set sound timer to value of VX
+						c8->ST = c8->V[X];
+						break;
+					case 0x1e:
+						// add the value in VX to I
+						c8->I += c8->V[X];
+						break;
+					case 0x0a:
+						// halt until key is pressed
+						tmp8 = getKeyValue(c8);
+						if(tmp8 != 0) {
+							c8->V[X] = tmp8;
+						} else {
+							c8->PC -= 2;
+						}
+						break;
+					case 0x29:
+						// set I to address of corresponding 
+						//  hex character (stored in VX) in font memory
+						c8->I = c8->V[X] * 5 + 0x50;
+						break;
+					case 0x33:
+						c8->mem[c8->I] = (c8->V[X] - (c8->V[X] % 100)) / 100;
+						c8->mem[c8->I + 1] = ((c8->V[X] % 100) - (c8->V[X] % 10)) / 10;
+						c8->mem[c8->I + 2] = c8->V[X] % 10;
+						c8->I = c8->I + 2;
+						break;
+					case 0x55:
+						// store values in registers V0-VX to I through I+X
+						for(i = 0;i <= X;i++) {
+							c8->mem[c8->I + i] = c8->V[i];
+						}
+						break;
+					case 0x65:
+						// pull values from I to I + X into V0-VX
+						for(i = 0;i <= X;i++) {
+							c8->V[i] = c8->mem[c8->I + i];
+						}
+						break;
+				}
+				break;
 		}
 
-		draw(c8);
 	}
 }
 
@@ -310,6 +390,17 @@ void user_input(Chip8* c8) {
 	if(IsKeyPressed(KEY_X)) c8->keypad[0] = 1;
 	if(IsKeyPressed(KEY_C)) c8->keypad[0xB] = 1;
 	if(IsKeyPressed(KEY_V)) c8->keypad[0xF] = 1;
+}
+
+uint8_t getKeyValue(Chip8* c8) {
+	uint8_t i;
+
+	for(i = 0;i <= 0xF;i++) {
+		if(c8->keypad[i]) {
+			return i;	
+		}
+	}
+	return 0;
 }
 
 void draw(Chip8* c8) {
