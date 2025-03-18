@@ -53,5 +53,3 @@ FX29 - set I to address of hex character in VX
 FX33 - BCD conversion
 FX55 - store values in V0-VX in memory starting at I
 FX65 - store values in memory starting at I to V0-VX
-
-Worrying alot about "getting it right the first time"...maybe avoid the perfectionism, but implement a debugger so we can feel "safe"

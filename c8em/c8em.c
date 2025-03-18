@@ -7,6 +7,9 @@
 #define COLS 64
 #define ROWS 32
 #define SIZE 10
+#define START_ADDRESS 0x200
+#define FONT_START_ADDRESS 0x50
+#define FONTSET_SIZE 80
 
 typedef struct Chip8_t {
 	uint8_t mem[4096];
@@ -38,25 +41,24 @@ int main(int argc, char **argv) {
 		printf("Usage: c8em.x romfile\n");
 	}
 	else {
+		srand(time(NULL));	// seed random number generator with timer
 		init(&c8);
 		loadROM(argv[1], &c8);
 
 		InitWindow(COLS * SIZE, ROWS * SIZE, "Chip8 Emulator");
-		SetTargetFPS(60);
+		//SetTargetFPS(60);
 
 		runChip8(&c8);
 
 		CloseWindow();
 	}
 
-	srand(time(NULL));	// seed random number generator with timer
-
 	return 0;
 }
 
 void init(Chip8 *c8) {
 	int i;
-	uint8_t font[] = {
+	uint8_t font[FONTSET_SIZE] = {
 		0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 		0x20, 0x60, 0x20, 0x20, 0x70, // 1
 		0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -76,7 +78,7 @@ void init(Chip8 *c8) {
 	};
 
 	// init registers
-	c8->PC = 0x200;
+	c8->PC = START_ADDRESS;
 	c8->SP = 0;
 	c8->DT = 0;
 	c8->ST = 0;
@@ -89,8 +91,8 @@ void init(Chip8 *c8) {
 
 	// zero out memory and add fonts
 	for(i = 0;i < 0x1000;i++) {
-		if(i >= 0x50 && i <= 0x9f) {
-			c8->mem[i] = font[i - 0x50];
+		if(i >= FONT_START_ADDRESS && i < 0xa0) {
+			c8->mem[i] = font[i - FONT_START_ADDRESS];
 		}
 		else {
 			c8->mem[i] = 0;
@@ -98,18 +100,19 @@ void init(Chip8 *c8) {
 	}
 
 	// display test pattern
-	for(i = 0;i < (COLS * ROWS);i++) {
+	/*for(i = 0;i < (COLS * ROWS);i++) {
 		if(i % 2 == 0) {
 			c8->display[i] = 0;
-		} else {
+		}
+		else {
 			c8->display[i] = 1;
 		}
-	}
+	}*/
 }
 
 void loadROM(char* s, Chip8* c8) {
 	FILE *inFile;
-	int i = 0x200;	// we start loading at mem[512]
+	int i = START_ADDRESS;	// we start loading at mem[512]
 
 	inFile = fopen(s, "rb");
 	if(inFile == NULL) {
@@ -133,6 +136,9 @@ void runChip8(Chip8* c8) {
 	uint8_t tmp8;
 
 	while(!WindowShouldClose()) {
+		//clock_t timereq;
+
+		//timereq = clock();
 		// fetch
 		curInst = c8->mem[c8->PC] << 8 | c8->mem[c8->PC + 1];
 
@@ -220,19 +226,23 @@ void runChip8(Chip8* c8) {
 					case 4:
 						// SET VX to VX + VY
 						tmp = c8->V[X] + c8->V[Y];
+						c8->V[X] = tmp;
 						c8->V[0xF] = 0;
 						if(tmp > 255) {
 							c8->V[0xF] = 1;
 						}
-						c8->V[X] = tmp;
 						break;
 					case 5:
 						// SET VX to VX - VY
-						c8->V[X] = c8->V[X] - c8->V[Y];
-						c8->V[0xF] = 0;
+						tmp = c8->V[X] - c8->V[Y];
+						//c8->V[X] = c8->V[X] - c8->V[Y];
 						if(c8->V[X] >= c8->V[Y]) {
 							c8->V[0xF] = 1;
 						}
+						else {
+							c8->V[0xF] = 0;
+						}
+						c8->V[X] = tmp;
 						break;
 					case 6:
 						tmp = c8->V[X] & 1; //is rightmost 0 or 1?
@@ -246,9 +256,11 @@ void runChip8(Chip8* c8) {
 					case 7:
 						// SET VX to VY - VX
 						c8->V[X] = c8->V[Y] - c8->V[X];
-						c8->V[0xF] = 0;
 						if(c8->V[Y] >= c8->V[X]) {
 							c8->V[0xF] = 1;
+						}
+						else {
+							c8->V[0xF] = 0;
 						}
 						break;
 					case 0xE:
@@ -340,13 +352,12 @@ void runChip8(Chip8* c8) {
 					case 0x29:
 						// set I to address of corresponding 
 						//  hex character (stored in VX) in font memory
-						c8->I = c8->V[X] * 5 + 0x50;
+						c8->I = c8->V[X] * 5 + FONT_START_ADDRESS;
 						break;
 					case 0x33:
 						c8->mem[c8->I] = (c8->V[X] - (c8->V[X] % 100)) / 100;
 						c8->mem[c8->I + 1] = ((c8->V[X] % 100) - (c8->V[X] % 10)) / 10;
 						c8->mem[c8->I + 2] = c8->V[X] % 10;
-						c8->I = c8->I + 2;
 						break;
 					case 0x55:
 						// store values in registers V0-VX to I through I+X
@@ -363,33 +374,53 @@ void runChip8(Chip8* c8) {
 				}
 				break;
 		}
-
+		//timereq = clock() - timereq;
+		/*if( (((double)timereq / CLOCKS_PER_SEC) * 1000) > 3.0 ) {
+			printf("Time per cycle: %.3f\n", ((double)timereq / CLOCKS_PER_SEC) * 1000);
+		}*/
 	}
 }
 
 void user_input(Chip8* c8) {
 	int i;
 
-	for(i = 0;i <= 0xF;i++) {
+/*	for(i = 0;i <= 0xF;i++) {
 		c8->keypad[i] = 0;
-	}
+	}*/
 
-	if(IsKeyPressed(KEY_ONE)) c8->keypad[1] = 1;
-	if(IsKeyPressed(KEY_TWO)) c8->keypad[2] = 1;
-	if(IsKeyPressed(KEY_THREE)) c8->keypad[3] = 1;
-	if(IsKeyPressed(KEY_FOUR)) c8->keypad[0xC] = 1;
-	if(IsKeyPressed(KEY_Q)) c8->keypad[4] = 1;
-	if(IsKeyPressed(KEY_W)) c8->keypad[5] = 1;
-	if(IsKeyPressed(KEY_E)) c8->keypad[6] = 1;
-	if(IsKeyPressed(KEY_R)) c8->keypad[0xD] = 1;
-	if(IsKeyPressed(KEY_A)) c8->keypad[7] = 1;
-	if(IsKeyPressed(KEY_S)) c8->keypad[8] = 1;
-	if(IsKeyPressed(KEY_D)) c8->keypad[9] = 1;
-	if(IsKeyPressed(KEY_F)) c8->keypad[0xE] = 1;
-	if(IsKeyPressed(KEY_Z)) c8->keypad[0xA] = 1;
-	if(IsKeyPressed(KEY_X)) c8->keypad[0] = 1;
-	if(IsKeyPressed(KEY_C)) c8->keypad[0xB] = 1;
-	if(IsKeyPressed(KEY_V)) c8->keypad[0xF] = 1;
+	if(IsKeyDown(KEY_ONE)) c8->keypad[1] = 1;
+	if(IsKeyDown(KEY_TWO)) c8->keypad[2] = 1;
+	if(IsKeyDown(KEY_THREE)) c8->keypad[3] = 1;
+	if(IsKeyDown(KEY_FOUR)) c8->keypad[0xC] = 1;
+	if(IsKeyDown(KEY_Q)) c8->keypad[4] = 1;
+	if(IsKeyDown(KEY_W)) c8->keypad[5] = 1;
+	if(IsKeyDown(KEY_E)) c8->keypad[6] = 1;
+	if(IsKeyDown(KEY_R)) c8->keypad[0xD] = 1;
+	if(IsKeyDown(KEY_A)) c8->keypad[7] = 1;
+	if(IsKeyDown(KEY_S)) c8->keypad[8] = 1;
+	if(IsKeyDown(KEY_D)) c8->keypad[9] = 1;
+	if(IsKeyDown(KEY_F)) c8->keypad[0xE] = 1;
+	if(IsKeyDown(KEY_Z)) c8->keypad[0xA] = 1;
+	if(IsKeyDown(KEY_X)) c8->keypad[0] = 1;
+	if(IsKeyDown(KEY_C)) c8->keypad[0xB] = 1;
+	
+	if(IsKeyUp(KEY_ONE)) c8->keypad[1] = 0;
+	if(IsKeyUp(KEY_TWO)) c8->keypad[2] = 0;
+	if(IsKeyUp(KEY_THREE)) c8->keypad[3] = 0;
+	if(IsKeyUp(KEY_FOUR)) c8->keypad[0xC] = 0;
+	if(IsKeyUp(KEY_Q)) c8->keypad[4] = 0;
+	if(IsKeyUp(KEY_W)) c8->keypad[5] = 0;
+	if(IsKeyUp(KEY_E)) c8->keypad[6] = 0;
+	if(IsKeyUp(KEY_R)) c8->keypad[0xD] = 0;
+	if(IsKeyUp(KEY_A)) c8->keypad[7] = 0;
+	if(IsKeyUp(KEY_S)) c8->keypad[8] = 0;
+	if(IsKeyUp(KEY_D)) c8->keypad[9] = 0;
+	if(IsKeyUp(KEY_F)) c8->keypad[0xE] = 0;
+	if(IsKeyUp(KEY_Z)) c8->keypad[0xA] = 0;
+	if(IsKeyUp(KEY_X)) c8->keypad[0] = 0;
+	if(IsKeyUp(KEY_C)) c8->keypad[0xB] = 0;
+	if(IsKeyUp(KEY_V)) c8->keypad[0xF] = 0;
+	if(IsKeyUp(KEY_V)) c8->keypad[0xF] = 0;
 }
 
 uint8_t getKeyValue(Chip8* c8) {
