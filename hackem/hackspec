@@ -1,0 +1,10 @@
+0xxxxxxxxxxxxxxx - A instruction
+111accccccdddjjj - C instruction
+0000111111000000
+0000000000111000
+0000000000000111
+
+1) A or C? (check bit 15)
+2) determine compute (bits 12-6)
+3) determine dest (5-3)
+4) determine jmp (2-0)
