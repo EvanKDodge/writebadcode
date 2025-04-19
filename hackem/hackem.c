@@ -19,6 +19,8 @@ int main(int argc, char **argv) {
 
 	init(&hack);
 	runHack(&hack);
+	printf("Here's the answer: %d\n", hack.RAM[0]);
+	printf("...again in binary: %016b\n", hack.RAM[0]);
 	return 0;
 }
 
@@ -26,9 +28,9 @@ void init(Hack* h) {
 	int i;
 
 	uint16_t ADDHACK[6] = {
-		0x0002,
+		0x7000,
 		0xEC10,
-		0x0003,
+		0x7FFF,
 		0xE090,
 		0x0000,
 		0xE308
@@ -66,12 +68,14 @@ void runHack(Hack* h) {
 
 	for(i = 0;i < 6;i++) {
 		// fetch next instruction
-		curInst = h->RAM[h->PC];
+		printf("PC: %d\n", h->PC);
+		curInst = h->ROM[h->PC];
 
 		h->PC += 1;
 
 		// decode instruction type: A (0)  or C (1)
-		T = (0x8000 & curInst) >> 15;
+		T = (0b1000000000000000 & curInst) >> 15;
+		printf("Type: %d\n", T);
 		switch(T) {
 			case 0:
 				// set the A register to the value
@@ -84,8 +88,10 @@ void runHack(Hack* h) {
 				break;
 			case 1:
 				C = (0x1FC0 & curInst) >> 6;
-				J = (0x0038 & curInst) >> 3;
-				D = (0x0007 & curInst);
+				J = (0x0007 & curInst);
+				D = (0x0038 & curInst) >> 3;
+
+				printf("Compute: %07b Dest: %03b Jump: %03b\n", C, D, J);
 
 				// compute value
 				switch(C) {
