@@ -1,59 +1,76 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 
+#define MAX_LINE_LEN 256
+
 typedef struct Hack_t {
-	uint16_t RAM[0x6001]; // RAM (0x0000-0x3FFF)
+	int16_t RAM[0x6001]; // RAM (0x0000-0x3FFF)
 						  // screen (0x4000-0x5FFF)
 						  // keyboard (0x6000)
-	uint16_t ROM[0x8000]; // ROM (0x0000-0x7FFF)
-	uint16_t PC;
-	uint16_t A;
-	uint16_t D;
+	int16_t ROM[0x8000]; // ROM (0x0000-0x7FFF)
+	int16_t PC;
+	int16_t A;
+	int16_t D;
 } Hack;
 
 void init(Hack*);
+void loadROM(char*, Hack*);
 void runHack(Hack*);
 
 int main(int argc, char **argv) {
 	Hack hack;
 
-	init(&hack);
-	runHack(&hack);
-	printf("Here's the answer: %d\n", hack.RAM[0]);
-	printf("...again in binary: %016b\n", hack.RAM[0]);
-	return 0;
+    if(argc != 2) {
+        printf("Usage: hackem.x romfile\n");
+    }
+    else {
+		init(&hack);
+		loadROM(argv[1], &hack);
+		hack.RAM[0] = 25003;
+		hack.RAM[1] = 25000;
+		runHack(&hack);
+		printf("Here's the answer: %d\n", hack.RAM[2]);
+		printf("...again in binary: %016b\n", hack.RAM[2]);
+		return 0;
+	}
 }
 
 void init(Hack* h) {
 	int i;
 
-	uint16_t ADDHACK[6] = {
-		0x7000,
-		0xEC10,
-		0x7FFF,
-		0xE090,
-		0x0000,
-		0xE308
-	};
-
 	h->PC = 0;
 	h->A = 0;
 	h->D = 0;
 
-	// zero ROM and add code (temporary)
+	// zero ROM
 	for(i == 0;i < 0x8000;i++) {
-		if(i < 6) {
-			h->ROM[i] = ADDHACK[i];
-		}
-		else {
-			h->ROM[i] = 0;
-		}
+		h->ROM[i] = 0;
 	}
 
 	// zero RAM
 	for(i == 0;i <= 0x6000;i++) {
 		h->RAM[i] = 0;
 	}
+}
+
+void loadROM(char* s, Hack* h) {
+    int i;
+	FILE *inFile;
+	char line[MAX_LINE_LEN];
+
+    inFile = fopen(s, "r");
+    if(inFile == NULL) {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+
+    for(i = 0;fgets(line, MAX_LINE_LEN, inFile) != NULL;i++)
+    {
+        h->ROM[i] = strtol(line, NULL, 2);
+    }
+
+    fclose(inFile);
 }
 
 void runHack(Hack* h) {
@@ -63,13 +80,14 @@ void runHack(Hack* h) {
 	uint16_t D; // destination instruction ( A, M, D or any combination)
 	uint16_t J; // jump instruction
 	uint16_t C; // compute instruction
-	uint16_t compVal; // computed value
+	int16_t compVal; // computed value
 	uint16_t dest; // destination
 
-	for(i = 0;i < 6;i++) {
+	for(i = 0;i < 16;i++) {
 		// fetch next instruction
 		printf("PC: %d\n", h->PC);
 		curInst = h->ROM[h->PC];
+		printf("%016b\n", h->ROM[h->PC]);
 
 		h->PC += 1;
 
@@ -169,6 +187,7 @@ void runHack(Hack* h) {
                         break;
 					case 0b1010011:
                         compVal = h->D - h->RAM[h->A];  // D-M
+						printf("compVal: %d\n", compVal);
                         break;
 					case 0b1000111:
                         compVal = h->RAM[h->A] - h->D;  // M-D
