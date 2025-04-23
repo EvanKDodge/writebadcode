@@ -44,12 +44,12 @@ void init(Hack* h) {
 	h->D = 0;
 
 	// zero ROM
-	for(i == 0;i < 0x8000;i++) {
+	for(i = 0;i < 0x8000;i++) {
 		h->ROM[i] = 0;
 	}
 
 	// zero RAM
-	for(i == 0;i <= 0x6000;i++) {
+	for(i = 0;i <= 0x6000;i++) {
 		h->RAM[i] = 0;
 	}
 }
@@ -239,7 +239,7 @@ void runHack(Hack* h) {
 						if(compVal > 0) h->PC = h->A;
 						break;
 					case 0b010:
-						if(compVal = 0) h->PC = h->A;
+						if(compVal == 0) h->PC = h->A;
 						break;
 					case 0b011:
 						if(compVal >= 0) h->PC = h->A;
