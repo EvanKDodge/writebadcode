@@ -8,3 +8,13 @@
 2) determine compute (bits 12-6)
 3) determine dest (5-3)
 4) determine jmp (2-0)
+
+UI
+-------------
+
+* What do we want to display?
+** Registers - A, D, PC
+** RAM/ROM - current address only and option to enter an address?
+** Screen (probably separate raylib window for this)
+** Contents of keyboard "register" (0x6000)
+** probably use ncurses for this

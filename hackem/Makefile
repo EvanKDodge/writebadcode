@@ -4,7 +4,7 @@ CC=gcc
 #LDFLAGS=-L$(RAYLIB_INST)/lib -lraylib -Wl,-R$(RAYLIB_INST)/lib
 
 all:
-	$(CC) -o hackem.x hackem.c #$(CFLAGS) $(LDFLAGS)
+	$(CC) -o hackem.x hackem.c cpu.c #$(CFLAGS) $(LDFLAGS)
 
 clean:
 	rm *.x
