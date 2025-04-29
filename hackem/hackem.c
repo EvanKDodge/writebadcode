@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <curses.h>
 #include "hackem.h"
 
 int main(int argc, char **argv) {
@@ -17,6 +18,7 @@ int main(int argc, char **argv) {
 		runHack(&hack);
 		printf("Here's the answer: %d\n", hack.RAM[2]);
 		printf("...again in binary: %016b\n", hack.RAM[2]);
+		endwin();
 		return 0;
 	}
 }
@@ -37,6 +39,9 @@ void init(Hack* h) {
 	for(i = 0;i <= 0x6000;i++) {
 		h->RAM[i] = 0;
 	}
+
+	// set up ncurses
+	initscr();
 }
 
 void loadROM(char* s, Hack* h) {

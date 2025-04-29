@@ -3,15 +3,27 @@
 #define MAX_LINE_LEN 256
 
 typedef struct Hack_t {
-    int16_t RAM[0x6001]; // RAM (0x0000-0x3FFF)
+    uint16_t RAM[0x6001]; // RAM (0x0000-0x3FFF)
                           // screen (0x4000-0x5FFF)
                           // keyboard (0x6000)
-    int16_t ROM[0x8000]; // ROM (0x0000-0x7FFF)
-    int16_t PC;
-    int16_t A;
-    int16_t D;
+    uint16_t ROM[0x8000]; // ROM (0x0000-0x7FFF)
+    uint16_t PC;
+    uint16_t A;
+    uint16_t D;
+	char strInst[13];
 } Hack;
 
+// hackem.c
 void init(Hack*);
 void loadROM(char*, Hack*);
+
+// cpu.c
 void runHack(Hack*);
+int16_t compute(uint16_t, Hack*);
+void jump(uint16_t, int16_t, Hack*);
+
+// cpu_display.c
+void show_cpu(Hack*);
+void show_compute(uint16_t, char*);
+void show_dest(uint16_t, char*);
+void show_jump(uint16_t, char*);
