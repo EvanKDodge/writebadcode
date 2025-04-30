@@ -18,6 +18,7 @@ int main(int argc, char **argv) {
 
 		// start raylib
 		InitWindow(1024, 640, "Hack Emulator");
+		hack.fontTTF = LoadFontEx("fonts/JuliaMono-Bold.ttf", 32, 0, 250);
 		runHack(&hack);
 		CloseWindow();
 

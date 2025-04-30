@@ -3,6 +3,8 @@
 #include "raylib.h"
 #include "hackem.h"
 
+#define TAB_STOP 75.0f
+
 void show_cpu(Hack* h) {
 	uint16_t curInst;
     uint16_t T; // instruction type
@@ -46,8 +48,46 @@ void show_cpu(Hack* h) {
 	// draw loop
 	BeginDrawing();
 		ClearBackground(BLACK);
-		DrawText("PC:", 20, 20, 20, WHITE);
-		DrawText(TextFormat("%016b", h->PC), 20 + 32, 20, 20, WHITE); 
+
+		DrawTextEx(h->fontTTF, "PC:",
+			(Vector2){ 20.0f, 20.0f },
+			(float)h->fontTTF.baseSize, 2, WHITE);
+		DrawTextEx(h->fontTTF, TextFormat("%016b", h->PC),
+			(Vector2){20.0f + TAB_STOP, 20.0f},
+			(float)h->fontTTF.baseSize, 2, WHITE);
+		DrawTextEx(h->fontTTF, "A:",
+            (Vector2){ 20.0f, 50.0f },
+            (float)h->fontTTF.baseSize, 2, WHITE);
+        DrawTextEx(h->fontTTF, TextFormat("%016b", h->A),
+            (Vector2){20.0f + TAB_STOP, 50.0f},
+            (float)h->fontTTF.baseSize, 2, WHITE);
+        DrawTextEx(h->fontTTF, "D:",
+            (Vector2){ 20.0f, 80.0f },
+            (float)h->fontTTF.baseSize, 2, WHITE);
+        DrawTextEx(h->fontTTF, TextFormat("%016b", h->D),
+            (Vector2){20.0f + TAB_STOP, 80.0f},
+            (float)h->fontTTF.baseSize, 2, WHITE);
+        DrawTextEx(h->fontTTF, "M:",
+            (Vector2){ 20.0f, 110.0f },
+            (float)h->fontTTF.baseSize, 2, WHITE);
+        DrawTextEx(h->fontTTF, TextFormat("%016b", h->RAM[h->A]),
+            (Vector2){20.0f + TAB_STOP, 110.0f},
+            (float)h->fontTTF.baseSize, 2, WHITE);
+        DrawTextEx(h->fontTTF, "I:",
+            (Vector2){ 20.0f, 140.0f },
+            (float)h->fontTTF.baseSize, 2, WHITE);
+        DrawTextEx(h->fontTTF, TextFormat("%016b", h->ROM[h->PC]),
+            (Vector2){20.0f + TAB_STOP, 140.0f},
+            (float)h->fontTTF.baseSize, 2, WHITE);
+        DrawTextEx(h->fontTTF, "Asm:",
+            (Vector2){ 20.0f, 170.0f },
+            (float)h->fontTTF.baseSize, 2, WHITE);
+        DrawTextEx(h->fontTTF, TextFormat("%s", sAsmInst),
+            (Vector2){20.0f + TAB_STOP, 170.0f},
+            (float)h->fontTTF.baseSize, 2, WHITE);
+		/*
+		DrawText(TextFormat("%s", sAsmInst), 20 + 50, 120, 20, WHITE);
+		*/
 	EndDrawing();
 /*
 	clear();

@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "raylib.h"
 
 #define MAX_LINE_LEN 256
 
@@ -10,6 +11,7 @@ typedef struct Hack_t {
     uint16_t PC;
     uint16_t A;
     uint16_t D;
+	Font fontTTF;
 	char strInst[13];
 } Hack;
 

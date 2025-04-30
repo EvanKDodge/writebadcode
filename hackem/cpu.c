@@ -21,45 +21,47 @@ void runHack(Hack* h) {
 		// before we do anything, display what's going on to user...
 		show_cpu(h);
 
-		// increment to next instruction
-		h->PC += 1;
+		if(IsKeyPressed(KEY_ENTER)) {
+			// increment to next instruction
+			h->PC += 1;
 
-		// decode instruction type: A (0)  or C (1)
-		T = (0b1000000000000000 & curInst) >> 15;
-		
-		switch(T) {
-			case 0:
-				// set the A register to the value
-				// given in the instruction
-				// Value can be used for:
-				// 1) a constant
-				// 2) a RAM address (M in following C instruction)
-				// 3) a ROM address if a JMP instruction follows
-				h->A = curInst;
-				break;
-			case 1:
-				C = (0x1FC0 & curInst) >> 6;
-				J = (0x0007 & curInst);
-				D = (0x0038 & curInst) >> 3;
+			// decode instruction type: A (0)  or C (1)
+			T = (0b1000000000000000 & curInst) >> 15;
+			
+			switch(T) {
+				case 0:
+					// set the A register to the value
+					// given in the instruction
+					// Value can be used for:
+					// 1) a constant
+					// 2) a RAM address (M in following C instruction)
+					// 3) a ROM address if a JMP instruction follows
+					h->A = curInst;
+					break;
+				case 1:
+					C = (0x1FC0 & curInst) >> 6;
+					J = (0x0007 & curInst);
+					D = (0x0038 & curInst) >> 3;
 
-				// compute value
-				compVal = compute(C, h);
+					// compute value
+					compVal = compute(C, h);
 
-				// place computed value in destination(s)
-				if(0b001 & D) {
-					h->RAM[h->A] = compVal;
-				}
-				if((0b010 & D) >> 1) {
-					h->D = compVal;
-				}
-				if((0b100 & D) >> 2) {
-					h->A = compVal;
-				}
+					// place computed value in destination(s)
+					if(0b001 & D) {
+						h->RAM[h->A] = compVal;
+					}
+					if((0b010 & D) >> 1) {
+						h->D = compVal;
+					}
+					if((0b100 & D) >> 2) {
+						h->A = compVal;
+					}
 
-				// calculate jump
-				jump(J, compVal, h);
+					// calculate jump
+					jump(J, compVal, h);
 
-				break;
+					break;
+			}
 		}
 	}
 }
