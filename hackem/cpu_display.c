@@ -4,6 +4,9 @@
 #include "hackem.h"
 
 #define TAB_STOP 75.0f
+#define LEFT_X 20.0f
+#define TOP_Y 20.0f
+#define ROW_Y 30.0f
 
 void show_cpu(Hack* h) {
 	uint16_t curInst;
@@ -50,69 +53,42 @@ void show_cpu(Hack* h) {
 		ClearBackground(BLACK);
 
 		DrawTextEx(h->fontTTF, "PC:",
-			(Vector2){ 20.0f, 20.0f },
+			(Vector2){ LEFT_X, TOP_Y },
 			(float)h->fontTTF.baseSize, 2, WHITE);
 		DrawTextEx(h->fontTTF, TextFormat("%016b", h->PC),
-			(Vector2){20.0f + TAB_STOP, 20.0f},
+			(Vector2){LEFT_X + TAB_STOP, TOP_Y},
 			(float)h->fontTTF.baseSize, 2, WHITE);
 		DrawTextEx(h->fontTTF, "A:",
-            (Vector2){ 20.0f, 50.0f },
+            (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 1) },
             (float)h->fontTTF.baseSize, 2, WHITE);
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->A),
-            (Vector2){20.0f + TAB_STOP, 50.0f},
+            (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 1) },
             (float)h->fontTTF.baseSize, 2, WHITE);
         DrawTextEx(h->fontTTF, "D:",
-            (Vector2){ 20.0f, 80.0f },
+            (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 2) },
             (float)h->fontTTF.baseSize, 2, WHITE);
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->D),
-            (Vector2){20.0f + TAB_STOP, 80.0f},
+            (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 2) },
             (float)h->fontTTF.baseSize, 2, WHITE);
         DrawTextEx(h->fontTTF, "M:",
-            (Vector2){ 20.0f, 110.0f },
+            (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 3) },
             (float)h->fontTTF.baseSize, 2, WHITE);
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->RAM[h->A]),
-            (Vector2){20.0f + TAB_STOP, 110.0f},
+            (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 3) },
             (float)h->fontTTF.baseSize, 2, WHITE);
         DrawTextEx(h->fontTTF, "I:",
-            (Vector2){ 20.0f, 140.0f },
+            (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 4) },
             (float)h->fontTTF.baseSize, 2, WHITE);
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->ROM[h->PC]),
-            (Vector2){20.0f + TAB_STOP, 140.0f},
+            (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 4) },
             (float)h->fontTTF.baseSize, 2, WHITE);
         DrawTextEx(h->fontTTF, "Asm:",
-            (Vector2){ 20.0f, 170.0f },
+            (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 5) },
             (float)h->fontTTF.baseSize, 2, WHITE);
         DrawTextEx(h->fontTTF, TextFormat("%s", sAsmInst),
-            (Vector2){20.0f + TAB_STOP, 170.0f},
+            (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 5) },
             (float)h->fontTTF.baseSize, 2, WHITE);
-		/*
-		DrawText(TextFormat("%s", sAsmInst), 20 + 50, 120, 20, WHITE);
-		*/
 	EndDrawing();
-/*
-	clear();
-
-	// PC
-	mvaddstr(1,1, "PC:");
-	mvprintw(1,5, "%016b", h->PC);
-	// A
-	mvaddstr(2,1, "A:");
-	mvprintw(2,5, "%016b", h->A);
-	// D
-	mvaddstr(3,1, "D:");
-	mvprintw(3,5, "%016b", h->D);
-	// M
-	mvaddstr(4,1, "M:");
-	mvprintw(4,5, "%016b", h->RAM[h->A]);
-	// I (instruction)
-	mvaddstr(5,1, "I:");
-	mvprintw(5,5, "%016b", h->ROM[h->PC]);
-	mvprintw(6,1, "Asm:");
-	mvprintw(6,5, "%s", sAsmInst);
-
-	refresh();
-	getch();
-*/
 }
 
 void show_compute(uint16_t C, char* sComp) {

@@ -16,10 +16,14 @@ int main(int argc, char **argv) {
 		hack.RAM[0] = 25003;
 		hack.RAM[1] = 25000;
 
-		// start raylib
+		// initialize raylib
 		InitWindow(1024, 640, "Hack Emulator");
-		hack.fontTTF = LoadFontEx("fonts/JuliaMono-Bold.ttf", 32, 0, 250);
+		hack.fontTTF = LoadFontEx("fonts/JuliaMono-Regular.ttf", 32, 0, 250);
+
+		// start the CPU
 		runHack(&hack);
+
+		// stop raylib
 		CloseWindow();
 
 		return 0;

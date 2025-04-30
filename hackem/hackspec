@@ -2,13 +2,13 @@ UI
 -------------
 
 - What do we want to display?
--- Registers - A, D, PC
+-- Registers - A, D, PC - DONE
 -- RAM/ROM - current address only and option to enter an address?
 -- Screen (probably separate raylib window for this)
 -- Contents of keyboard "register" (0x6000)
 
 -- Display assembly language instructions
---- For the current instruction
+--- For the current instruction - DONE
 --- For each instruction in ROM in a window (later)
 
 - Input
