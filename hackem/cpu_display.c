@@ -1,5 +1,6 @@
-#include <curses.h>
+#include <stdio.h>
 #include <string.h>
+#include "raylib.h"
 #include "hackem.h"
 
 void show_cpu(Hack* h) {
@@ -42,6 +43,13 @@ void show_cpu(Hack* h) {
 			break;
 	}
 
+	// draw loop
+	BeginDrawing();
+		ClearBackground(BLACK);
+		DrawText("PC:", 20, 20, 20, WHITE);
+		DrawText(TextFormat("%016b", h->PC), 20 + 32, 20, 20, WHITE); 
+	EndDrawing();
+/*
 	clear();
 
 	// PC
@@ -64,6 +72,7 @@ void show_cpu(Hack* h) {
 
 	refresh();
 	getch();
+*/
 }
 
 void show_compute(uint16_t C, char* sComp) {

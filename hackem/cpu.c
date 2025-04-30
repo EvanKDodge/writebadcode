@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include "raylib.h"
 #include "hackem.h"
 
 void runHack(Hack* h) {
@@ -13,7 +14,7 @@ void runHack(Hack* h) {
 	int16_t compVal; // computed value
 	uint16_t dest; // destination
 
-	for(i = 0;i < 16;i++) {
+	while(!WindowShouldClose()) {
 		// fetch next instruction
 		curInst = h->ROM[h->PC];
 

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <curses.h>
+#include "raylib.h"
 #include "hackem.h"
 
 int main(int argc, char **argv) {
@@ -15,10 +15,12 @@ int main(int argc, char **argv) {
 		loadROM(argv[1], &hack);
 		hack.RAM[0] = 25003;
 		hack.RAM[1] = 25000;
+
+		// start raylib
+		InitWindow(1024, 640, "Hack Emulator");
 		runHack(&hack);
-		printf("Here's the answer: %d\n", hack.RAM[2]);
-		printf("...again in binary: %016b\n", hack.RAM[2]);
-		endwin();
+		CloseWindow();
+
 		return 0;
 	}
 }
@@ -39,9 +41,6 @@ void init(Hack* h) {
 	for(i = 0;i <= 0x6000;i++) {
 		h->RAM[i] = 0;
 	}
-
-	// set up ncurses
-	initscr();
 }
 
 void loadROM(char* s, Hack* h) {
