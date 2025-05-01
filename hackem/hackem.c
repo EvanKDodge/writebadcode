@@ -13,8 +13,8 @@ int main(int argc, char **argv) {
     else {
 		init(&hack);
 		loadROM(argv[1], &hack);
-		hack.RAM[0] = 25003;
-		hack.RAM[1] = 25000;
+		hack.RAM[0] = 25;
+		hack.RAM[1] = 0;
 
 		// initialize raylib
 		InitWindow(1024, 640, "Hack Emulator");

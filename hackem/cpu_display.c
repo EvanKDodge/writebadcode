@@ -11,6 +11,10 @@
 #define SCR_LEFT_X 480
 #define SCR_WIDTH 520
 #define SCR_HEIGHT 264
+#define X_COLS 512
+#define Y_ROWS 256
+#define SCR_BASE_ADDR 0x4000
+#define SCR_ARR_LEN 0x2000
 
 void show_cpu(Hack* h) {
 	uint16_t curInst;
@@ -56,6 +60,7 @@ void show_cpu(Hack* h) {
 }
 
 void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
+
 	// draw loop
 	BeginDrawing();
 		ClearBackground(BLACK);
@@ -96,6 +101,33 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
         DrawTextEx(h->fontTTF, TextFormat("%s", sAsmInst),
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 5) },
             (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+
+
+		// draw contents of screen memory
+
+		int i; // offset for screen address
+		int j; // bit being processed
+		int x, y; // for tracking x,y coord on Hack screen
+		int byte_value;
+		int px_value;
+
+		for(i = 0;i < 0x2000;i++) {
+			byte_value = h->RAM[SCR_BASE_ADDR + i];
+			for(j = 0;j < 16;j++) {
+				px_value = (byte_value >> j) & 1;
+				x = ((i % 32) * 16) + j;
+				y = i / 32;
+
+                switch(px_value) {
+                    case 0:
+                        DrawPixel(SCR_LEFT_X + 4 + x, 24 + y, GREEN);
+                        break;
+                    case 1:
+                        DrawPixel(SCR_LEFT_X + 4 + x, 24 + y, BLACK);
+                        break;
+                }
+			}
+		}
 
 		// temporary: blocking out space for the screen
 		DrawLine(SCR_LEFT_X, TOP_Y, SCR_LEFT_X+SCR_WIDTH, TOP_Y, TEXT_COLOR);
