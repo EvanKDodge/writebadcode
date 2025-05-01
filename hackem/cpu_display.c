@@ -7,6 +7,10 @@
 #define LEFT_X 20.0f
 #define TOP_Y 20.0f
 #define ROW_Y 30.0f
+#define TEXT_COLOR GREEN
+#define SCR_LEFT_X 480
+#define SCR_WIDTH 520
+#define SCR_HEIGHT 264
 
 void show_cpu(Hack* h) {
 	uint16_t curInst;
@@ -48,47 +52,60 @@ void show_cpu(Hack* h) {
 			break;
 	}
 
+	draw_loop(h, sComp, sDest, sJump, sAsmInst);
+}
+
+void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
 	// draw loop
 	BeginDrawing();
 		ClearBackground(BLACK);
 
 		DrawTextEx(h->fontTTF, "PC:",
 			(Vector2){ LEFT_X, TOP_Y },
-			(float)h->fontTTF.baseSize, 2, WHITE);
+			(float)h->fontTTF.baseSize, 2, TEXT_COLOR);
 		DrawTextEx(h->fontTTF, TextFormat("%016b", h->PC),
 			(Vector2){LEFT_X + TAB_STOP, TOP_Y},
-			(float)h->fontTTF.baseSize, 2, WHITE);
+			(float)h->fontTTF.baseSize, 2, TEXT_COLOR);
 		DrawTextEx(h->fontTTF, "A:",
             (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 1) },
-            (float)h->fontTTF.baseSize, 2, WHITE);
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->A),
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 1) },
-            (float)h->fontTTF.baseSize, 2, WHITE);
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, "D:",
             (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 2) },
-            (float)h->fontTTF.baseSize, 2, WHITE);
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->D),
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 2) },
-            (float)h->fontTTF.baseSize, 2, WHITE);
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, "M:",
             (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 3) },
-            (float)h->fontTTF.baseSize, 2, WHITE);
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->RAM[h->A]),
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 3) },
-            (float)h->fontTTF.baseSize, 2, WHITE);
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, "I:",
             (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 4) },
-            (float)h->fontTTF.baseSize, 2, WHITE);
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->ROM[h->PC]),
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 4) },
-            (float)h->fontTTF.baseSize, 2, WHITE);
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, "Asm:",
             (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 5) },
-            (float)h->fontTTF.baseSize, 2, WHITE);
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, TextFormat("%s", sAsmInst),
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 5) },
-            (float)h->fontTTF.baseSize, 2, WHITE);
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+
+		// temporary: blocking out space for the screen
+		DrawLine(SCR_LEFT_X, TOP_Y, SCR_LEFT_X+SCR_WIDTH, TOP_Y, TEXT_COLOR);
+		DrawLine(SCR_LEFT_X, TOP_Y, SCR_LEFT_X, TOP_Y+SCR_HEIGHT, TEXT_COLOR);
+		DrawLine(SCR_LEFT_X+SCR_WIDTH, TOP_Y, SCR_LEFT_X+SCR_WIDTH,
+			TOP_Y+SCR_HEIGHT, TEXT_COLOR);
+		DrawLine(SCR_LEFT_X, TOP_Y+SCR_HEIGHT, SCR_LEFT_X+SCR_WIDTH,
+			TOP_Y+SCR_HEIGHT, TEXT_COLOR);
 	EndDrawing();
+
 }
 
 void show_compute(uint16_t C, char* sComp) {

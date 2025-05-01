@@ -22,10 +22,12 @@ void loadROM(char*, Hack*);
 // cpu.c
 void runHack(Hack*);
 int16_t compute(uint16_t, Hack*);
+void store(Hack*, uint16_t, int16_t);
 void jump(uint16_t, int16_t, Hack*);
 
 // cpu_display.c
 void show_cpu(Hack*);
+void draw_loop(Hack*, char*, char*, char*, char*);
 void show_compute(uint16_t, char*);
 void show_dest(uint16_t, char*);
 void show_jump(uint16_t, char*);

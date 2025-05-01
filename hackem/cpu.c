@@ -47,16 +47,8 @@ void runHack(Hack* h) {
 					compVal = compute(C, h);
 
 					// place computed value in destination(s)
-					if(0b001 & D) {
-						h->RAM[h->A] = compVal;
-					}
-					if((0b010 & D) >> 1) {
-						h->D = compVal;
-					}
-					if((0b100 & D) >> 2) {
-						h->A = compVal;
-					}
-
+					store(h, D, compVal);
+		
 					// calculate jump
 					jump(J, compVal, h);
 
@@ -156,6 +148,19 @@ int16_t compute(uint16_t C, Hack *h) {
 			break;
 	}
 	return compVal;
+}
+
+void store(Hack *h, uint16_t D, int16_t compVal) {
+	// place computed value in destination(s)
+	if(0b001 & D) {
+		h->RAM[h->A] = compVal;
+	}
+	if((0b010 & D) >> 1) {
+		h->D = compVal;
+	}
+	if((0b100 & D) >> 2) {
+		h->A = compVal;
+	}
 }
 
 void jump(uint16_t J, int16_t compVal, Hack *h) {
