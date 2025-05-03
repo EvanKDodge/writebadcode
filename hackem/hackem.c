@@ -20,8 +20,15 @@ int main(int argc, char **argv) {
 		InitWindow(1024, 640, "Hack Emulator");
 		hack.fontTTF = LoadFontEx("fonts/JuliaMono-Regular.ttf", 32, 0, 250);
 
-		// start the CPU
-		runHack(&hack);
+		while(!WindowShouldClose()) {
+			// display CPU data
+			show_cpu(&hack);
+
+			if(IsKeyPressed(KEY_ENTER)) {
+				// run a CPU cycle
+				runHack(&hack);
+			}
+		}
 
 		// stop raylib
 		CloseWindow();
