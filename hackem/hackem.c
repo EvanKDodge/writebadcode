@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
     else {
 		init(&hack);
 		loadROM(argv[1], &hack);
-		hack.RAM[0] = 25;
+		hack.RAM[0] = 16;
 		hack.RAM[1] = 0;
 
 		// initialize raylib

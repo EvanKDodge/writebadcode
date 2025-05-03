@@ -3,9 +3,15 @@ UI
 
 - What do we want to display?
 -- Registers - A, D, PC - DONE
--- RAM/ROM - current address only and option to enter an address?
--- Screen (probably separate raylib window for this)
--- Contents of keyboard "register" (0x6000)
+-- RAM/ROM - current address only - DONE
+-- Screen (probably separate raylib window for this) - DONE
+-- ** Contents of keyboard "register" (0x6000)
+-- List contents of RAM
+--- Editable
+--- Paging
+-- List contents of ROM
+--- Flip between ASM and Hack? (or just show both?)
+--- Paging
 
 -- Display assembly language instructions
 --- For the current instruction - DONE
@@ -15,3 +21,4 @@ UI
 -- Run
 -- Reset
 -- run the program to the end (no stepping)
+-- ** change contents of a memory address

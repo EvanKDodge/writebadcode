@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include "hackem.h"
 
-#define TAB_STOP 75.0f
+#define TAB_STOP 145.0f
 #define LEFT_X 20.0f
 #define TOP_Y 20.0f
 #define ROW_Y 30.0f
@@ -83,13 +83,13 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->D),
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 2) },
             (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
-        DrawTextEx(h->fontTTF, "M:",
+        DrawTextEx(h->fontTTF, "RAM[A]:",
             (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 3) },
             (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->RAM[h->A]),
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 3) },
             (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
-        DrawTextEx(h->fontTTF, "I:",
+        DrawTextEx(h->fontTTF, "ROM[PC]:",
             (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 4) },
             (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
         DrawTextEx(h->fontTTF, TextFormat("%016b", h->ROM[h->PC]),
@@ -120,10 +120,10 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
 
                 switch(px_value) {
                     case 0:
-                        DrawPixel(SCR_LEFT_X + 4 + x, 24 + y, GREEN);
+                        DrawPixel(SCR_LEFT_X + 4 + x, 24 + y, BLACK);
                         break;
                     case 1:
-                        DrawPixel(SCR_LEFT_X + 4 + x, 24 + y, BLACK);
+                        DrawPixel(SCR_LEFT_X + 4 + x, 24 + y, GREEN);
                         break;
                 }
 			}
