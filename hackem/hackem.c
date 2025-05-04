@@ -16,18 +16,19 @@ int main(int argc, char **argv) {
 		hack.RAM[0] = 16;
 		hack.RAM[1] = 0;
 
-		// initialize raylib
+		// initialize raylib, set up render texture, and font
 		InitWindow(1024, 640, "Hack Emulator");
+		initTexture(&hack);
 		hack.fontTTF = LoadFontEx("fonts/JuliaMono-Regular.ttf", 32, 0, 250);
 
 		while(!WindowShouldClose()) {
 			// display CPU data
 			show_cpu(&hack);
 
-			if(IsKeyPressed(KEY_ENTER)) {
+			//if(IsKeyPressed(KEY_ENTER)) {
 				// run a CPU cycle
 				runHack(&hack);
-			}
+			//}
 		}
 
 		// stop raylib
@@ -55,6 +56,28 @@ void init(Hack* h) {
 	}
 }
 
+void initTexture(Hack* h) {
+	int x, y;
+
+	// set up graphics
+	for(x = 0;x < 512;x++) {
+		for(y = 0;y < 256;y++) {
+			h->screenArray[y][x] = BLACK;
+		}
+	}
+
+	Image screenImage = {
+		.data = h->screenArray,
+		.width = 512,
+		.height = 256,
+		.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
+		.mipmaps = 1
+	};
+
+	printf("About to load texture\n");
+	h->screenTexture = LoadTextureFromImage(screenImage);
+}
+
 void loadROM(char* s, Hack* h) {
     int i;
 	FILE *inFile;
@@ -66,7 +89,7 @@ void loadROM(char* s, Hack* h) {
         exit(1);
     }
 
-    for(i = 0;fgets(line, MAX_LINE_LEN, inFile) != NULL;i++)
+	for(i = 0;fgets(line, MAX_LINE_LEN, inFile) != NULL;i++)
     {
         h->ROM[i] = strtol(line, NULL, 2);
     }

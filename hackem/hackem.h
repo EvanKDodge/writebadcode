@@ -11,12 +11,17 @@ typedef struct Hack_t {
     uint16_t PC;
     uint16_t A;
     uint16_t D;
-	Font fontTTF;
 	char strInst[13];
+
+	// Graphics stuff...should probably go elsewhere...but I'm lazy
+	Font fontTTF;
+	Color screenArray[256][512];
+	Texture2D screenTexture;
 } Hack;
 
 // hackem.c
 void init(Hack*);
+void initTexture(Hack*);
 void loadROM(char*, Hack*);
 
 // cpu.c

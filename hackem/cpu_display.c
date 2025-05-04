@@ -120,14 +120,22 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
 
                 switch(px_value) {
                     case 0:
-                        DrawPixel(SCR_LEFT_X + 4 + x, 24 + y, BLACK);
+						h->screenArray[y][x] = BLACK;
                         break;
                     case 1:
-                        DrawPixel(SCR_LEFT_X + 4 + x, 24 + y, GREEN);
+						h->screenArray[y][x] = GREEN;
                         break;
                 }
 			}
 		}
+
+		UpdateTexture(h->screenTexture, h->screenArray);
+		DrawTexturePro(h->screenTexture,
+						(Rectangle) { 0, 0, 512, 256 },
+                        (Rectangle) { SCR_LEFT_X + 4, 24, 512, 256 },
+						(Vector2){0,0},
+						0.0f,
+						WHITE);
 
 		// temporary: blocking out space for the screen
 		DrawLine(SCR_LEFT_X, TOP_Y, SCR_LEFT_X+SCR_WIDTH, TOP_Y, TEXT_COLOR);

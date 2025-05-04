@@ -5,6 +5,8 @@ UI
 -- Registers - A, D, PC - DONE
 -- RAM/ROM - current address only - DONE
 -- Screen (probably separate raylib window for this) - DONE
+--- This is slow. Try updating a texture and copying to screen - DONE
+
 -- ** Contents of keyboard "register" (0x6000)
 -- List contents of RAM
 --- Editable
