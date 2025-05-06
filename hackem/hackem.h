@@ -13,10 +13,15 @@ typedef struct Hack_t {
     uint16_t D;
 	char strInst[13];
 
+	// state (stepping or running)
+	int16_t isStepping;
+
 	// Graphics stuff...should probably go elsewhere...but I'm lazy
 	Font fontTTF;
 	Color screenArray[256][512];
 	Texture2D screenTexture;
+	uint16_t iRAMstart; // first RAM address in RAM list
+	uint16_t iROMstart; // first ROM address is ROM list
 } Hack;
 
 // hackem.c

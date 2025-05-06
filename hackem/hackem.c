@@ -22,13 +22,21 @@ int main(int argc, char **argv) {
 		hack.fontTTF = LoadFontEx("fonts/JuliaMono-Regular.ttf", 32, 0, 250);
 
 		while(!WindowShouldClose()) {
+			if(IsKeyPressed(KEY_S)) {
+				hack.isStepping = !hack.isStepping;
+			}
+			else if(IsKeyPressed(KEY_R)) {
+				init(&hack);
+				loadROM(argv[1], &hack);
+			}
+
 			// display CPU data
 			show_cpu(&hack);
 
-			//if(IsKeyPressed(KEY_ENTER)) {
+			if(IsKeyPressed(KEY_ENTER) || !hack.isStepping) {
 				// run a CPU cycle
 				runHack(&hack);
-			//}
+			}
 		}
 
 		// stop raylib
@@ -45,6 +53,8 @@ void init(Hack* h) {
 	h->A = 0;
 	h->D = 0;
 
+	h->isStepping = 1;
+
 	// zero ROM
 	for(i = 0;i < 0x8000;i++) {
 		h->ROM[i] = 0;
@@ -54,6 +64,10 @@ void init(Hack* h) {
 	for(i = 0;i <= 0x6000;i++) {
 		h->RAM[i] = 0;
 	}
+
+	// reset RAM and ROM starting addresses
+	h->iRAMstart = 0;
+	h->iROMstart = 0;
 }
 
 void initTexture(Hack* h) {
@@ -74,7 +88,6 @@ void initTexture(Hack* h) {
 		.mipmaps = 1
 	};
 
-	printf("About to load texture\n");
 	h->screenTexture = LoadTextureFromImage(screenImage);
 }
 

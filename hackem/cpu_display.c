@@ -102,6 +102,26 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 5) },
             (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
 
+		// display ROM and RAM lists at bottom of screen
+		int k;
+		for(k = 0;k < 10;k++) {
+			// display ROM
+			DrawTextEx(h->fontTTF, TextFormat("%04x", h->iROMstart+k),
+				(Vector2){ LEFT_X, TOP_Y + (ROW_Y * (10+k)) },
+				(float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+			DrawTextEx(h->fontTTF, TextFormat("%016b", h->ROM[h->iROMstart+k]),
+				(Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * (10+k)) },
+				(float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+			
+			// display RAM
+            DrawTextEx(h->fontTTF, TextFormat("%04x", h->iRAMstart+k),
+                (Vector2){ SCR_LEFT_X, TOP_Y + (ROW_Y * (10+k)) },
+                (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+            DrawTextEx(h->fontTTF, TextFormat("%016b", h->RAM[h->iRAMstart+k]),
+                (Vector2){ SCR_LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * (10+k)) },
+                (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+		}
+
 
 		// draw contents of screen memory
 
