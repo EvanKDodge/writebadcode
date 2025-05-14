@@ -25,6 +25,107 @@ int main(int argc, char **argv) {
 			if(IsKeyPressed(KEY_S)) {
 				hack.isStepping = !hack.isStepping;
 			}
+			else if(IsKeyPressed(KEY_LEFT)) {
+				if(hack.iColSelect) {
+					hack.iColSelect--;
+				}
+			}
+			else if(IsKeyPressed(KEY_RIGHT)) {
+				if(!hack.iColSelect) {
+					hack.iColSelect++;
+				}
+			}
+			else if(IsKeyPressed(KEY_UP)) {
+				if(hack.iRowSelect > 0) {
+					hack.iRowSelect--;
+				}
+				else {
+					if(hack.iColSelect) { // RAM col selected
+						if(hack.iRAMstart > 0) {
+							hack.iRAMstart--;
+						}
+					}
+					else {			// ROM col selected
+						if(hack.iROMstart > 0) {
+							hack.iROMstart--;
+						}
+					}
+				}
+			}
+			else if(IsKeyPressed(KEY_PAGE_UP)) {
+				if(hack.iColSelect) { // RAM col selected
+					if(hack.iRAMstart > 9) {
+						hack.iRAMstart -= 10;
+					}
+					else
+					{
+						hack.iRAMstart = 0;
+					}
+				}
+				else {          // ROM col selected
+					if(hack.iROMstart > 9) {
+						hack.iROMstart -= 10;
+					}
+					else
+					{
+						hack.iROMstart = 0;
+					}
+				}
+			}
+			else if(IsKeyPressed(KEY_HOME)) {
+				if(hack.iColSelect) { // RAM
+					hack.iRAMstart = 0;
+				}
+				else {  // ROM
+					hack.iROMstart = 0;
+				}
+				hack.iRowSelect = 0;
+			}
+			else if(IsKeyPressed(KEY_DOWN)) {
+				if(hack.iRowSelect < 9) {
+					hack.iRowSelect++;
+				}
+				else {
+					if(hack.iColSelect) { // RAM col selected
+						if(hack.iRAMstart < (0x3FFF - 9)) {
+							hack.iRAMstart++;
+						}
+					}
+					else {			// ROM col selected
+						if(hack.iROMstart < (0x7FFF - 9)) {
+							hack.iROMstart++;
+						}
+					}
+				}
+			}
+			else if(IsKeyPressed(KEY_PAGE_DOWN)) {
+				if(hack.iColSelect) { // RAM col selected
+					if(hack.iRAMstart < 0x3FFF - 9) {
+						hack.iRAMstart += 10;
+					}
+					else
+					{
+						hack.iRAMstart = 0x3FFF - 9;
+					}
+				}
+				else {          // ROM col selected
+					if(hack.iROMstart < 0x7FFF - 9) {
+						hack.iROMstart += 10;
+					}
+					else
+					{
+						hack.iROMstart = 0x7FFF - 9;
+					}
+				}
+			}
+			else if(IsKeyPressed(KEY_END)) {
+				if(hack.iColSelect) { // RAM
+					hack.iRAMstart = 0x3FFF - 9;
+				}
+				else {	// ROM
+					hack.iROMstart = 0x7FFF - 9;
+				}
+			}
 			else if(IsKeyPressed(KEY_R)) {
 				init(&hack);
 				loadROM(argv[1], &hack);
@@ -68,6 +169,8 @@ void init(Hack* h) {
 	// reset RAM and ROM starting addresses
 	h->iRAMstart = 0;
 	h->iROMstart = 0;
+	h->iColSelect = 0;
+	h->iRowSelect = 0;
 }
 
 void initTexture(Hack* h) {

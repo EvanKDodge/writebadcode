@@ -1,6 +1,8 @@
 UI
 -------------
 
+- STOP trying to improve performance!!!
+
 - What do we want to display?
 -- Registers - A, D, PC - DONE
 -- RAM/ROM - current address only - DONE
@@ -10,10 +12,8 @@ UI
 -- ** Contents of keyboard "register" (0x6000)
 -- List contents of RAM - IN PROGRESS
 --- Editable
---- Paging
 -- List contents of ROM - IN PROGRESS
 --- Flip between ASM and Hack? (or just show both?)
---- Paging
 
 -- Display assembly language instructions
 --- For the current instruction - DONE

@@ -22,6 +22,8 @@ typedef struct Hack_t {
 	Texture2D screenTexture;
 	uint16_t iRAMstart; // first RAM address in RAM list
 	uint16_t iROMstart; // first ROM address is ROM list
+	uint16_t iColSelect; // selected column (ROM = 0, RAM = 1)
+	uint16_t iRowSelect; // selected row (0..10)
 } Hack;
 
 // hackem.c
@@ -38,6 +40,7 @@ void jump(uint16_t, int16_t, Hack*);
 // cpu_display.c
 void show_cpu(Hack*);
 void draw_loop(Hack*, char*, char*, char*, char*);
+Color isSelected(Hack*, int, int);
 void show_compute(uint16_t, char*);
 void show_dest(uint16_t, char*);
 void show_jump(uint16_t, char*);

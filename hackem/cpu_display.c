@@ -104,22 +104,23 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
 
 		// display ROM and RAM lists at bottom of screen
 		int k;
+
 		for(k = 0;k < 10;k++) {
 			// display ROM
 			DrawTextEx(h->fontTTF, TextFormat("%04x", h->iROMstart+k),
 				(Vector2){ LEFT_X, TOP_Y + (ROW_Y * (10+k)) },
-				(float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+				(float)h->fontTTF.baseSize, 2, isSelected(h, k, 0));
 			DrawTextEx(h->fontTTF, TextFormat("%016b", h->ROM[h->iROMstart+k]),
 				(Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * (10+k)) },
-				(float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+				(float)h->fontTTF.baseSize, 2, isSelected(h, k, 0));
 			
 			// display RAM
             DrawTextEx(h->fontTTF, TextFormat("%04x", h->iRAMstart+k),
                 (Vector2){ SCR_LEFT_X, TOP_Y + (ROW_Y * (10+k)) },
-                (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+                (float)h->fontTTF.baseSize, 2, isSelected(h, k, 1));
             DrawTextEx(h->fontTTF, TextFormat("%016b", h->RAM[h->iRAMstart+k]),
                 (Vector2){ SCR_LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * (10+k)) },
-                (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+                (float)h->fontTTF.baseSize, 2, isSelected(h, k, 1));
 		}
 
 
@@ -133,6 +134,7 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
 
 		for(i = 0;i < 0x2000;i++) {
 			byte_value = h->RAM[SCR_BASE_ADDR + i];
+
 			for(j = 0;j < 16;j++) {
 				px_value = (byte_value >> j) & 1;
 				x = ((i % 32) * 16) + j;
@@ -166,6 +168,15 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
 			TOP_Y+SCR_HEIGHT, TEXT_COLOR);
 	EndDrawing();
 
+}
+
+Color isSelected(Hack* h, int row, int col) {
+	if(h->iColSelect == col && h->iRowSelect == row) {
+		return WHITE;
+	}
+	else {
+		return TEXT_COLOR;
+	}
 }
 
 void show_compute(uint16_t C, char* sComp) {
