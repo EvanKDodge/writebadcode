@@ -30,6 +30,7 @@ typedef struct Hack_t {
 void init(Hack*);
 void initTexture(Hack*);
 void loadROM(char*, Hack*);
+void keyInput(Hack*, char*);
 
 // cpu.c
 void runHack(Hack*);

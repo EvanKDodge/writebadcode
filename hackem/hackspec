@@ -10,17 +10,7 @@ UI
 --- This is slow. Try updating a texture and copying to screen - DONE
 
 -- ** Contents of keyboard "register" (0x6000)
--- List contents of RAM - IN PROGRESS
+-- List contents of RAM - DONE
 --- Editable
--- List contents of ROM - IN PROGRESS
+-- List contents of ROM - DONE
 --- Flip between ASM and Hack? (or just show both?)
-
--- Display assembly language instructions
---- For the current instruction - DONE
---- For each instruction in ROM in a window (later)
-
-- Input
--- Run (change to not stepping) - DONE
--- Stop (change to stepping) - DONE
--- Reset - DONE
--- ** change contents of a memory address

@@ -22,114 +22,8 @@ int main(int argc, char **argv) {
 		hack.fontTTF = LoadFontEx("fonts/JuliaMono-Regular.ttf", 32, 0, 250);
 
 		while(!WindowShouldClose()) {
-			if(IsKeyPressed(KEY_S)) {
-				hack.isStepping = !hack.isStepping;
-			}
-			else if(IsKeyPressed(KEY_LEFT)) {
-				if(hack.iColSelect) {
-					hack.iColSelect--;
-				}
-			}
-			else if(IsKeyPressed(KEY_RIGHT)) {
-				if(!hack.iColSelect) {
-					hack.iColSelect++;
-				}
-			}
-			else if(IsKeyPressed(KEY_UP)) {
-				if(hack.iRowSelect > 0) {
-					hack.iRowSelect--;
-				}
-				else {
-					if(hack.iColSelect) { // RAM col selected
-						if(hack.iRAMstart > 0) {
-							hack.iRAMstart--;
-						}
-					}
-					else {			// ROM col selected
-						if(hack.iROMstart > 0) {
-							hack.iROMstart--;
-						}
-					}
-				}
-			}
-			else if(IsKeyPressed(KEY_PAGE_UP)) {
-				if(hack.iColSelect) { // RAM col selected
-					if(hack.iRAMstart > 9) {
-						hack.iRAMstart -= 10;
-					}
-					else
-					{
-						hack.iRAMstart = 0;
-					}
-				}
-				else {          // ROM col selected
-					if(hack.iROMstart > 9) {
-						hack.iROMstart -= 10;
-					}
-					else
-					{
-						hack.iROMstart = 0;
-					}
-				}
-			}
-			else if(IsKeyPressed(KEY_HOME)) {
-				if(hack.iColSelect) { // RAM
-					hack.iRAMstart = 0;
-				}
-				else {  // ROM
-					hack.iROMstart = 0;
-				}
-				hack.iRowSelect = 0;
-			}
-			else if(IsKeyPressed(KEY_DOWN)) {
-				if(hack.iRowSelect < 9) {
-					hack.iRowSelect++;
-				}
-				else {
-					if(hack.iColSelect) { // RAM col selected
-						if(hack.iRAMstart < (0x3FFF - 9)) {
-							hack.iRAMstart++;
-						}
-					}
-					else {			// ROM col selected
-						if(hack.iROMstart < (0x7FFF - 9)) {
-							hack.iROMstart++;
-						}
-					}
-				}
-			}
-			else if(IsKeyPressed(KEY_PAGE_DOWN)) {
-				if(hack.iColSelect) { // RAM col selected
-					if(hack.iRAMstart < 0x3FFF - 9) {
-						hack.iRAMstart += 10;
-					}
-					else
-					{
-						hack.iRAMstart = 0x3FFF - 9;
-					}
-				}
-				else {          // ROM col selected
-					if(hack.iROMstart < 0x7FFF - 9) {
-						hack.iROMstart += 10;
-					}
-					else
-					{
-						hack.iROMstart = 0x7FFF - 9;
-					}
-				}
-			}
-			else if(IsKeyPressed(KEY_END)) {
-				if(hack.iColSelect) { // RAM
-					hack.iRAMstart = 0x3FFF - 9;
-				}
-				else {	// ROM
-					hack.iROMstart = 0x7FFF - 9;
-				}
-			}
-			else if(IsKeyPressed(KEY_R)) {
-				init(&hack);
-				loadROM(argv[1], &hack);
-			}
+			// check...most...key input
+			keyInput(&hack, argv[1]);
 
 			// display CPU data
 			show_cpu(&hack);
@@ -211,4 +105,115 @@ void loadROM(char* s, Hack* h) {
     }
 
     fclose(inFile);
+}
+
+void keyInput(Hack* h, char* s) {
+	if(IsKeyPressed(KEY_S)) {
+		h->isStepping = !h->isStepping;
+	}
+	else if(IsKeyPressed(KEY_LEFT)) {
+		if(h->iColSelect) {
+			h->iColSelect--;
+		}
+	}
+	else if(IsKeyPressed(KEY_RIGHT)) {
+		if(!h->iColSelect) {
+			h->iColSelect++;
+		}
+	}
+	else if(IsKeyPressed(KEY_UP)) {
+		if(h->iRowSelect > 0) {
+			h->iRowSelect--;
+		}
+		else {
+			if(h->iColSelect) { // RAM col selected
+				if(h->iRAMstart > 0) {
+					h->iRAMstart--;
+				}
+			}
+			else {			// ROM col selected
+				if(h->iROMstart > 0) {
+					h->iROMstart--;
+				}
+			}
+		}
+	}
+	else if(IsKeyPressed(KEY_PAGE_UP)) {
+		if(h->iColSelect) { // RAM col selected
+			if(h->iRAMstart > 9) {
+				h->iRAMstart -= 10;
+			}
+			else
+			{
+				h->iRAMstart = 0;
+			}
+		}
+		else {          // ROM col selected
+			if(h->iROMstart > 9) {
+				h->iROMstart -= 10;
+			}
+			else
+			{
+				h->iROMstart = 0;
+			}
+		}
+	}
+	else if(IsKeyPressed(KEY_HOME)) {
+		if(h->iColSelect) { // RAM
+			h->iRAMstart = 0;
+		}
+		else {  // ROM
+			h->iROMstart = 0;
+		}
+		h->iRowSelect = 0;
+	}
+	else if(IsKeyPressed(KEY_DOWN)) {
+		if(h->iRowSelect < 9) {
+			h->iRowSelect++;
+		}
+		else {
+			if(h->iColSelect) { // RAM col selected
+				if(h->iRAMstart < (0x3FFF - 9)) {
+					h->iRAMstart++;
+				}
+			}
+			else {			// ROM col selected
+				if(h->iROMstart < (0x7FFF - 9)) {
+					h->iROMstart++;
+				}
+			}
+		}
+	}
+	else if(IsKeyPressed(KEY_PAGE_DOWN)) {
+		if(h->iColSelect) { // RAM col selected
+			if(h->iRAMstart < 0x3FFF - 18) {
+				h->iRAMstart += 10;
+			}
+			else
+			{
+				h->iRAMstart = 0x3FFF - 9;
+			}
+		}
+		else {          // ROM col selected
+			if(h->iROMstart < 0x7FFF - 18) {
+				h->iROMstart += 10;
+			}
+			else
+			{
+				h->iROMstart = 0x7FFF - 9;
+			}
+		}
+	}
+	else if(IsKeyPressed(KEY_END)) {
+		if(h->iColSelect) { // RAM
+			h->iRAMstart = 0x3FFF - 9;
+		}
+		else {	// ROM
+			h->iROMstart = 0x7FFF - 9;
+		}
+	}
+	else if(IsKeyPressed(KEY_R)) {
+		init(h);
+		loadROM(s, h);
+	}
 }
