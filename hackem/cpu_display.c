@@ -7,6 +7,7 @@
 #define LEFT_X 20.0f
 #define TOP_Y 20.0f
 #define ROW_Y 30.0f
+#define TBOX_W 285.0f
 #define TEXT_COLOR GREEN
 #define SCR_LEFT_X 480
 #define SCR_WIDTH 520
@@ -101,6 +102,17 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
         DrawTextEx(h->fontTTF, TextFormat("%s", sAsmInst),
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 5) },
             (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+
+		// draw text input box if RAM is selected
+		if(h->iColSelect) {
+			Rectangle rRAMinput = {
+				SCR_LEFT_X + TAB_STOP,
+				TOP_Y + (ROW_Y * 9),
+				TBOX_W,
+				ROW_Y
+				};
+			DrawRectangleLinesEx(rRAMinput, 1, TEXT_COLOR);
+		}
 
 		// display ROM and RAM lists at bottom of screen
 		int k;

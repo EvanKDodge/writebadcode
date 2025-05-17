@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 			// display CPU data
 			show_cpu(&hack);
 
-			if(IsKeyPressed(KEY_ENTER) || !hack.isStepping) {
+			if(IsKeyPressed(KEY_SPACE) || !hack.isStepping) {
 				// run a CPU cycle
 				runHack(&hack);
 			}
