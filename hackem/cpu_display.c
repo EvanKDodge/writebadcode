@@ -159,13 +159,9 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
 						0.0f,
 						WHITE);
 
-		// temporary: blocking out space for the screen
-		DrawLine(SCR_LEFT_X, TOP_Y, SCR_LEFT_X+SCR_WIDTH, TOP_Y, TEXT_COLOR);
-		DrawLine(SCR_LEFT_X, TOP_Y, SCR_LEFT_X, TOP_Y+SCR_HEIGHT, TEXT_COLOR);
-		DrawLine(SCR_LEFT_X+SCR_WIDTH, TOP_Y, SCR_LEFT_X+SCR_WIDTH,
-			TOP_Y+SCR_HEIGHT, TEXT_COLOR);
-		DrawLine(SCR_LEFT_X, TOP_Y+SCR_HEIGHT, SCR_LEFT_X+SCR_WIDTH,
-			TOP_Y+SCR_HEIGHT, TEXT_COLOR);
+		// draw screen outline
+		Rectangle scrBox = { SCR_LEFT_X, TOP_Y, SCR_WIDTH, SCR_HEIGHT };
+		DrawRectangleLinesEx(scrBox, 1, TEXT_COLOR);
 	EndDrawing();
 
 }
