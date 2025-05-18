@@ -24,13 +24,16 @@ typedef struct Hack_t {
 	uint16_t iROMstart; // first ROM address is ROM list
 	uint16_t iColSelect; // selected column (ROM = 0, RAM = 1)
 	uint16_t iRowSelect; // selected row (0..10)
+	char cRAMinput[6]; // buffer for RAM input text box
+	int iCharCount;
 } Hack;
 
 // hackem.c
 void init(Hack*);
 void initTexture(Hack*);
 void loadROM(char*, Hack*);
-void keyInput(Hack*, char*);
+//void keyInput(Hack*, char*);
+void keyInput(Hack*, int, char*);
 
 // cpu.c
 void runHack(Hack*);

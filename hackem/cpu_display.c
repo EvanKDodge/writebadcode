@@ -112,6 +112,9 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
 				ROW_Y
 				};
 			DrawRectangleLinesEx(rRAMinput, 1, TEXT_COLOR);
+			DrawTextEx(h->fontTTF, TextFormat("%s", h->cRAMinput),
+				(Vector2){SCR_LEFT_X + TAB_STOP,TOP_Y + (ROW_Y * 9)},
+				(float)h->fontTTF.baseSize, 2, TEXT_COLOR);
 		}
 
 		// display ROM and RAM lists at bottom of screen

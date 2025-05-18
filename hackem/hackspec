@@ -11,6 +11,6 @@ UI
 
 -- ** Contents of keyboard "register" (0x6000)
 -- List contents of RAM - DONE
---- Editable
+--- Editable - DONE
 -- List contents of ROM - DONE
 --- Flip between ASM and Hack? (or just show both?)
