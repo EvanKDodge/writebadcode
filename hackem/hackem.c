@@ -14,8 +14,6 @@ int main(int argc, char **argv) {
     else {
 		init(&hack);
 		loadROM(argv[1], &hack);
-		hack.RAM[0] = 16;
-		hack.RAM[1] = 0;
 
 		// initialize raylib, set up render texture, and font
 		InitWindow(1024, 640, "Hack Emulator");
