@@ -102,6 +102,13 @@ void draw_loop(Hack *h, char *sComp, char *sDest, char *sJump, char *sAsmInst) {
         DrawTextEx(h->fontTTF, TextFormat("%s", sAsmInst),
             (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 5) },
             (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+        DrawTextEx(h->fontTTF, "Key:",
+            (Vector2){ LEFT_X, TOP_Y + (ROW_Y * 6) },
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+        DrawTextEx(h->fontTTF, TextFormat("%d", h->RAM[0x6000]),
+            (Vector2){LEFT_X + TAB_STOP, TOP_Y + (ROW_Y * 6) },
+            (float)h->fontTTF.baseSize, 2, TEXT_COLOR);
+
 
 		// draw text input box if RAM is selected
 		if(h->iColSelect) {

@@ -15,6 +15,7 @@ typedef struct Hack_t {
 
 	// state (stepping or running)
 	int16_t isStepping;
+	int16_t keyMode;
 
 	// Graphics stuff...should probably go elsewhere...but I'm lazy
 	Font fontTTF;

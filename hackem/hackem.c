@@ -50,6 +50,7 @@ void init(Hack* h) {
 	h->D = 0;
 
 	h->isStepping = 1;
+	h->keyMode = 0;
 
 	// zero ROM
 	for(i = 0;i < 0x8000;i++) {
@@ -112,151 +113,165 @@ void loadROM(char* s, Hack* h) {
 }
 
 void keyInput(Hack* h, int key, char* s) {
-	switch(key) {
-		case KEY_S:
-			printf("keyInput %d\n", key);
-			h->isStepping = !h->isStepping;
-			break;
-		case KEY_LEFT:
-			if(h->iColSelect) { // if RAM is selected
-				h->iColSelect--;
-				strcpy(h->cRAMinput, "");
-				h->iCharCount = 0;
-			}
-			break;
-		case KEY_RIGHT:
-			if(!h->iColSelect) { // if ROM is selected
-				h->iColSelect++;
-			}
-			break;
-		case KEY_UP:
-			if(h->iRowSelect > 0) {
-				h->iRowSelect--;
-			}
-			else {
+	if(h->keyMode) {
+		switch(key) {
+			case KEY_TAB:
+				h->keyMode = 0;
+				break;
+			default:
+				h->RAM[0x6000] = key;
+				break;
+		}
+	}
+	else {
+		switch(key) {
+			case KEY_TAB:
+				h->keyMode = 1;
+				break;
+			case KEY_S:
+				h->isStepping = !h->isStepping;
+				break;
+			case KEY_LEFT:
+				if(h->iColSelect) { // if RAM is selected
+					h->iColSelect--;
+					strcpy(h->cRAMinput, "");
+					h->iCharCount = 0;
+				}
+				break;
+			case KEY_RIGHT:
+				if(!h->iColSelect) { // if ROM is selected
+					h->iColSelect++;
+				}
+				break;
+			case KEY_UP:
+				if(h->iRowSelect > 0) {
+					h->iRowSelect--;
+				}
+				else {
+					if(h->iColSelect) { // RAM col selected
+						if(h->iRAMstart > 0) {
+							h->iRAMstart--;
+						}
+					}
+					else {			// ROM col selected
+						if(h->iROMstart > 0) {
+							h->iROMstart--;
+						}
+					}
+				}
+				break;
+			case KEY_PAGE_UP:
 				if(h->iColSelect) { // RAM col selected
-					if(h->iRAMstart > 0) {
-						h->iRAMstart--;
+					if(h->iRAMstart > 9) {
+						h->iRAMstart -= 10;
+					}
+					else
+					{
+						h->iRAMstart = 0;
 					}
 				}
-				else {			// ROM col selected
-					if(h->iROMstart > 0) {
-						h->iROMstart--;
+				else {          // ROM col selected
+					if(h->iROMstart > 9) {
+						h->iROMstart -= 10;
+					}
+					else
+					{
+						h->iROMstart = 0;
 					}
 				}
-			}
-			break;
-		case KEY_PAGE_UP:
-			if(h->iColSelect) { // RAM col selected
-				if(h->iRAMstart > 9) {
-					h->iRAMstart -= 10;
-				}
-				else
-				{
+				break;
+			case KEY_HOME:
+				if(h->iColSelect) { // RAM
 					h->iRAMstart = 0;
 				}
-			}
-			else {          // ROM col selected
-				if(h->iROMstart > 9) {
-					h->iROMstart -= 10;
-				}
-				else
-				{
+				else {  // ROM
 					h->iROMstart = 0;
 				}
-			}
-			break;
-		case KEY_HOME:
-			if(h->iColSelect) { // RAM
-				h->iRAMstart = 0;
-			}
-			else {  // ROM
-				h->iROMstart = 0;
-			}
-			h->iRowSelect = 0;
-			break;
-		case KEY_DOWN:
-			if(h->iRowSelect < 9) {
-				h->iRowSelect++;
-			}
-			else {
+				h->iRowSelect = 0;
+				break;
+			case KEY_DOWN:
+				if(h->iRowSelect < 9) {
+					h->iRowSelect++;
+				}
+				else {
+					if(h->iColSelect) { // RAM col selected
+						if(h->iRAMstart < (0x3FFF - 9)) {
+							h->iRAMstart++;
+						}
+					}
+					else {			// ROM col selected
+						if(h->iROMstart < (0x7FFF - 9)) {
+							h->iROMstart++;
+						}
+					}
+				}
+				break;
+			case KEY_PAGE_DOWN:
 				if(h->iColSelect) { // RAM col selected
-					if(h->iRAMstart < (0x3FFF - 9)) {
-						h->iRAMstart++;
+					if(h->iRAMstart < 0x3FFF - 18) {
+						h->iRAMstart += 10;
+					}
+					else
+					{
+						h->iRAMstart = 0x3FFF - 9;
 					}
 				}
-				else {			// ROM col selected
-					if(h->iROMstart < (0x7FFF - 9)) {
-						h->iROMstart++;
+				else {          // ROM col selected
+					if(h->iROMstart < 0x7FFF - 18) {
+						h->iROMstart += 10;
+					}
+					else
+					{
+						h->iROMstart = 0x7FFF - 9;
 					}
 				}
-			}
-			break;
-		case KEY_PAGE_DOWN:
-			if(h->iColSelect) { // RAM col selected
-				if(h->iRAMstart < 0x3FFF - 18) {
-					h->iRAMstart += 10;
-				}
-				else
-				{
+				break;
+			case KEY_END:
+				if(h->iColSelect) { // RAM
 					h->iRAMstart = 0x3FFF - 9;
 				}
-			}
-			else {          // ROM col selected
-				if(h->iROMstart < 0x7FFF - 18) {
-					h->iROMstart += 10;
-				}
-				else
-				{
+				else {	// ROM
 					h->iROMstart = 0x7FFF - 9;
 				}
-			}
-			break;
-		case KEY_END:
-			if(h->iColSelect) { // RAM
-				h->iRAMstart = 0x3FFF - 9;
-			}
-			else {	// ROM
-				h->iROMstart = 0x7FFF - 9;
-			}
-			break;
-		case KEY_R:
-			init(h);
-			loadROM(s, h);
+				break;
+			case KEY_R:
+				init(h);
+				loadROM(s, h);
 
-			break;
-		case KEY_ZERO:
-		case KEY_ONE:
-		case KEY_TWO:
-		case KEY_THREE:
-		case KEY_FOUR:
-		case KEY_FIVE:
-		case KEY_SIX:
-		case KEY_SEVEN:
-		case KEY_EIGHT:
-		case KEY_NINE:
-			if(h->iColSelect) { // if RAM is selected
-				if(h->iCharCount < 5) {
-					h->cRAMinput[h->iCharCount] = (char)key;
-					h->cRAMinput[h->iCharCount+1] = '\0';
-					h->iCharCount++;
+				break;
+			case KEY_ZERO:
+			case KEY_ONE:
+			case KEY_TWO:
+			case KEY_THREE:
+			case KEY_FOUR:
+			case KEY_FIVE:
+			case KEY_SIX:
+			case KEY_SEVEN:
+			case KEY_EIGHT:
+			case KEY_NINE:
+				if(h->iColSelect) { // if RAM is selected
+					if(h->iCharCount < 5) {
+						h->cRAMinput[h->iCharCount] = (char)key;
+						h->cRAMinput[h->iCharCount+1] = '\0';
+						h->iCharCount++;
+					}
 				}
-			}
-			break;
-		case KEY_BACKSPACE:
-			if(h->iColSelect) { // if RAM is selected
-				if(h->iCharCount > 0) {
-					h->iCharCount--;
-					h->cRAMinput[h->iCharCount] = '\0';
+				break;
+			case KEY_BACKSPACE:
+				if(h->iColSelect) { // if RAM is selected
+					if(h->iCharCount > 0) {
+						h->iCharCount--;
+						h->cRAMinput[h->iCharCount] = '\0';
+					}
 				}
-			}
-			break;
-		case KEY_ENTER:
-			if(h->iColSelect) { // if RAM is selected
-				h->RAM[h->iRAMstart + h->iRowSelect] = atoi(h->cRAMinput);
-				strcpy(h->cRAMinput, "");
-				h->iCharCount = 0;
-			}
-			break;
+				break;
+			case KEY_ENTER:
+				if(h->iColSelect) { // if RAM is selected
+					h->RAM[h->iRAMstart + h->iRowSelect] = atoi(h->cRAMinput);
+					strcpy(h->cRAMinput, "");
+					h->iCharCount = 0;
+				}
+				break;
+		}
 	}
 }
