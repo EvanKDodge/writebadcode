@@ -1,10 +1,21 @@
 * Learn how to bring tiles into the game - DONE
 ** DrawTextureRec & DrawTexturePro
 ** See video - Drawing sprites in raylib (youtube)
+
 * Start w/moving a character around the screen - DONE
 ** Decide how big a level will be - single screen (no scrolling)
+
+* Tilemap
+** 2D array (indices are x,y coords of location in tilemap)
+** all sprites are the same W & H
+** perhaps a scale for rendering (probably not)
+** a string to describe the tile
+** do we want to provide stats here?
+
 * Representing maps in memory
-** 2D array with x,y coordinates from tilemap
+** 2D array
+** each cell contains an index to the tilemap (x,y)
+
 * Dynamic items to be placed on map - linked list or array
 ** Player
 ** Treasure
